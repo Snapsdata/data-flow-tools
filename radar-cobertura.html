@@ -9,7 +9,7 @@
 :root{
   --bg:#f2f2f2;--surface:#fff;--surface2:#f8f8f8;
   --border:#e5e5e5;--text:#111;--text2:#666;--muted:#aaa;
-  --accent:#0369a1;--accent-light:#e0f2fe;
+  --accent:#2171b5;--accent-light:#deebf7;
   --red:#dc2626;--green:#16a34a;--amber:#d97706;
   --mono:'Courier New',monospace;
   --radius:8px;--radius-lg:12px;
@@ -76,7 +76,7 @@ body{font-family:-apple-system,'Helvetica Neue',Arial,sans-serif;background:var(
 .sum-pill{display:flex;flex-direction:column;justify-content:center;padding:4px 24px 4px 0;}
 .sum-label{font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:4px;}
 .sum-value{font-size:15px;font-weight:800;color:#fff;line-height:1;}
-.sum-value.pico{color:#22d3ee;}
+.sum-value.pico{color:#9ecae1;}
 .sum-value.valle{color:#f87171;}
 .sum-div{width:1px;background:rgba(255,255,255,.1);margin:0 24px 0 0;min-height:32px;align-self:stretch;}
 
@@ -96,15 +96,15 @@ body{font-family:-apple-system,'Helvetica Neue',Arial,sans-serif;background:var(
 .bars-container{padding:20px 22px;}
 .bar-row{display:grid;grid-template-columns:58px 1fr 70px 44px;gap:10px;align-items:center;margin-bottom:8px;}
 .bar-lbl{font-size:11px;font-family:var(--mono);color:var(--text2);text-align:right;}
-.bar-lbl.pico{color:var(--accent);font-weight:700;}
+.bar-lbl.pico{color:#2171b5;font-weight:700;}
 .bar-lbl.valle{color:var(--red);font-weight:700;}
 .bar-outer{background:#f0f0f0;border-radius:0;height:22px;overflow:hidden;border-left:2px solid #e2e8f0;}
 .bar-inner{height:22px;border-radius:0;transition:width .6s ease;}
 .bar-val{font-size:11px;font-family:var(--mono);font-weight:700;color:var(--text);text-align:right;}
-.bar-val.pico{color:var(--accent);}
+.bar-val.pico{color:#2171b5;}
 .bar-val.valle{color:var(--red);}
 .bar-tag{font-size:9px;font-weight:700;padding:2px 6px;border-radius:0;text-align:center;letter-spacing:.5px;}
-.tag-pico{background:#eff6ff;color:var(--accent);}
+.tag-pico{background:#deebf7;color:#2171b5;}
 .tag-valle{background:#fff5f5;color:var(--red);}
 .tag-empty{opacity:0;}
 .bars-legend{display:flex;gap:16px;padding:10px 22px;border-top:1px solid #f5f5f5;font-size:10px;color:var(--muted);}
@@ -112,18 +112,18 @@ body{font-family:-apple-system,'Helvetica Neue',Arial,sans-serif;background:var(
 
 /* HEATMAP */
 .hmap-container{padding:18px 20px;overflow-x:auto;}
-.hmap-table{border-collapse:collapse;font-size:9px;border:1px solid #e2e8f0;}
-.hmap-table th{font-family:var(--mono);font-size:10px;color:#fff;padding:7px 4px;text-align:center;font-weight:700;background:#1e293b;letter-spacing:.5px;border-right:1px solid #334155;}
+.hmap-table{border-collapse:separate;border-spacing:3px 2px;font-size:9px;}
+.hmap-table th{font-family:var(--mono);font-size:10px;color:#fff;padding:7px 6px;text-align:center;font-weight:700;background:#1a2f4a;letter-spacing:.5px;border-radius:0;}
 .hmap-table th:first-child{background:#0f172a;}
 .hmap-table th:last-child{}
-.hmap-table td.day-lbl{font-family:var(--mono);font-size:10px;color:#475569;padding:4px 12px;white-space:nowrap;font-weight:600;background:#f8fafc;border-right:2px solid #e2e8f0;}
-.hcell{width:44px;height:26px;border-radius:0;text-align:center;font-weight:700;vertical-align:middle;line-height:24px;}
+.hmap-table td.day-lbl{font-family:var(--mono);font-size:10px;color:#64748b;padding:4px 14px 4px 0;white-space:nowrap;font-weight:700;background:transparent;letter-spacing:.3px;}
+.hcell{width:42px;height:24px;border-radius:4px;text-align:center;font-weight:700;vertical-align:middle;line-height:24px;}
 .hmap-legend{display:flex;align-items:center;gap:10px;margin-top:12px;flex-wrap:wrap;font-size:10px;color:var(--muted);}
 .btn-dl{font-family:inherit;font-size:10px;font-weight:600;color:#888;background:#fff;border:1px solid #e0e0e0;border-radius:0;padding:4px 10px;cursor:pointer;transition:all .12s;display:flex;align-items:center;gap:4px;white-space:nowrap;}
 .btn-dl:hover{border-color:#888;color:#111;}
-.hmap-table td.total-lbl{font-family:var(--mono);font-size:10px;color:#fff;padding:6px 12px;white-space:nowrap;font-weight:800;background:#0f172a;border-top:3px solid #334155;border-right:2px solid #334155;}
-.hmap-table td.total-cell{padding:1px;background:#0f172a;border-top:3px solid #334155;border-right:1px solid #334155;}
-.hcell-total{width:44px;height:26px;border-radius:0;text-align:center;font-weight:800;vertical-align:middle;line-height:26px;font-size:11px;}
+.hmap-table td.total-lbl{font-family:var(--mono);font-size:11px;color:#fff;padding:7px 14px 7px 0;white-space:nowrap;font-weight:800;background:transparent;letter-spacing:1.5px;}
+.hmap-table td.total-cell{padding:2px;background:transparent;border:none;}
+.hcell-total{width:42px;height:24px;border-radius:0;text-align:center;font-weight:800;vertical-align:middle;line-height:26px;font-size:11px;}
 .hldot{width:12px;height:12px;border-radius:0;display:inline-block;margin-right:3px;vertical-align:middle;}
 
 /* CURVA */
@@ -196,10 +196,10 @@ body{font-family:-apple-system,'Helvetica Neue',Arial,sans-serif;background:var(
       <div class="panel-body">
         <div class="bars-container" id="barsBody"></div>
         <div class="bars-legend">
-          <span><span class="ldot" style="background:#0369a1;"></span>Hora pico</span>
-          <span><span class="ldot" style="background:#0ea5e9;"></span>Alta actividad</span>
-          <span><span class="ldot" style="background:#22d3ee;"></span>Media</span>
-          <span><span class="ldot" style="background:#e0f2fe;border:1px solid #a5f3fc;"></span>Baja</span>
+          <span><span class="ldot" style="background:#2171b5;"></span>Hora pico</span>
+          <span><span class="ldot" style="background:#4292c6;"></span>Alta actividad</span>
+          <span><span class="ldot" style="background:#9ecae1;"></span>Media</span>
+          <span><span class="ldot" style="background:#deebf7;border:1px solid #a5f3fc;"></span>Baja</span>
           <span><span class="ldot" style="background:#e2e8f0;border:1px solid #cbd5e1;"></span>Hora valle</span>
         </div>
       </div>
@@ -496,11 +496,11 @@ function renderResults(horario) {
     const esPico  = hora == horaPico;
     const esValle = hora == horaValle;
     let barColor, tagHTML = '';
-    if (esPico)       { barColor='#0e7490'; tagHTML=`<span class="bar-tag tag-pico">PICO</span>`; }
+    if (esPico)       { barColor='#2171b5'; tagHTML=`<span class="bar-tag tag-pico">PICO</span>`; }
     else if (esValle) { barColor='#cbd5e1'; tagHTML=`<span class="bar-tag tag-valle">VALLE</span>`; }
-    else if (pct>60)  { barColor='#0891b2'; tagHTML=`<span class="bar-tag tag-empty">·</span>`; }
-    else if (pct>30)  { barColor='#22d3ee'; tagHTML=`<span class="bar-tag tag-empty">·</span>`; }
-    else              { barColor='#cffafe'; tagHTML=`<span class="bar-tag tag-empty">·</span>`; }
+    else if (pct>60)  { barColor='#4292c6'; tagHTML=`<span class="bar-tag tag-empty">·</span>`; }
+    else if (pct>30)  { barColor='#9ecae1'; tagHTML=`<span class="bar-tag tag-empty">·</span>`; }
+    else              { barColor='#deebf7'; tagHTML=`<span class="bar-tag tag-empty">·</span>`; }
     return `<div class="bar-row">
       <span class="bar-lbl ${esPico?'pico':esValle?'valle':''}">${hora}:00 h</span>
       <div class="bar-outer"><div class="bar-inner" style="width:${pct}%;background:${barColor};"></div></div>
@@ -534,10 +534,10 @@ function renderResults(horario) {
   function cellColor(v) {
     if (!v) return {bg:'#f1f5f9',fg:'transparent'};
     const r = v/maxCell;
-    if (r > 0.75) return {bg:'#0369a1',fg:'#fff'};
-    if (r > 0.5)  return {bg:'#0ea5e9',fg:'#fff'};
-    if (r > 0.25) return {bg:'#7dd3fc',fg:'#0c4a6e'};
-    return {bg:'#e0f2fe',fg:'#0c4a6e'};
+    if (r > 0.75) return {bg:'#2171b5',fg:'#fff'};
+    if (r > 0.5)  return {bg:'#4292c6',fg:'#fff'};
+    if (r > 0.25) return {bg:'#9ecae1',fg:'#08306b'};
+    return {bg:'#deebf7',fg:'#08306b'};
   }
 
   function fmtDia(str) {
@@ -554,7 +554,7 @@ function renderResults(horario) {
     const cells = horasOrden.map(h => {
       const v = porFechaHora[f][h] || 0;
       const c = cellColor(v);
-      return `<td style="padding:0;background:#f8fafc;border:1px solid #e2e8f0;"><div class="hcell" style="background:${c.bg};color:${c.fg};">${v>0?v:''}</div></td>`;
+      return `<td style="padding:2px;background:#f4f7fa;border:none;"><div class="hcell" style="background:${c.bg};color:${c.fg};">${v>0?v:''}</div></td>`;
     }).join('');
     return `<tr><td class="day-lbl">${fmtDia(f)}</td>${cells}</tr>`;
   }).join('');
@@ -569,14 +569,14 @@ function renderResults(horario) {
     const v = totalsPorHora[h];
     const esPico = v === maxTotal;
     const txtColor = v ? '#fff' : 'rgba(255,255,255,.2)';
-    const acento = esPico ? 'border-left:3px solid #0ea5e9;' : '';
-    return `<td class="total-cell"><div class="hcell-total" style="background:#0f172a;color:${txtColor};${acento}">${v}</div></td>`;
+    const acento = esPico ? 'border-left:3px solid #6aaed6;' : '';
+    return `<td class="total-cell" style="padding:2px;"><div class="hcell-total" style="background:#0f172a;color:${txtColor};${acento}">${v}</div></td>`;
   }).join('');
 
   document.getElementById('metaHeatmap').textContent = fechasOrdenadas.length + ' días · tickets por hora';
   document.getElementById('hmapBody').innerHTML = `
     <table class="hmap-table">
-      <thead style="background:#1e293b;"><tr><th style="background:#0f172a;padding:6px 8px;"></th>${thCols}</tr></thead>
+      <thead style="background:#1e293b;"><tr><th style="background:#0d1f35;padding:6px 8px;"></th>${thCols}</tr></thead>
       <tbody>
         ${rows}
         <tr>
@@ -587,11 +587,11 @@ function renderResults(horario) {
     </table>
     <div class="hmap-legend">
       <span><span class="hldot" style="background:#f1f5f9;border:1px solid #e2e8f0;"></span>0</span>
-      <span><span class="hldot" style="background:#e0f2fe;"></span>1–2</span>
-      <span><span class="hldot" style="background:#7dd3fc;"></span>3–5</span>
-      <span><span class="hldot" style="background:#0ea5e9;"></span>6–8</span>
-      <span><span class="hldot" style="background:#0369a1;"></span>9+</span>
-      <span style="margin-left:8px;"><span class="hldot" style="background:#0369a1;outline:2px solid #0e7490;outline-offset:-2px;"></span>Hora pico semana</span>
+      <span><span class="hldot" style="background:#deebf7;"></span>1–2</span>
+      <span><span class="hldot" style="background:#9ecae1;"></span>3–5</span>
+      <span><span class="hldot" style="background:#4292c6;"></span>6–8</span>
+      <span><span class="hldot" style="background:#2171b5;"></span>9+</span>
+      <span style="margin-left:8px;"><span class="hldot" style="background:#2171b5;outline:2px solid #0e7490;outline-offset:-2px;"></span>Hora pico semana</span>
     </div>
   `;
 
@@ -636,7 +636,7 @@ function renderResults(horario) {
 
     const dots = pts.map((p,i) => {
       const esMejor = dias[i][1] === maxV;
-      return `<circle cx="${p[0]}" cy="${p[1]}" r="${esMejor?5:3}" fill="${esMejor?'#0e7490':'#22d3ee'}" stroke="#fff" stroke-width="1.5"/>`;
+      return `<circle cx="${p[0]}" cy="${p[1]}" r="${esMejor?5:3}" fill="${esMejor?'#2171b5':'#9ecae1'}" stroke="#fff" stroke-width="1.5"/>`;
     }).join('');
 
     document.getElementById('curvaBody').innerHTML = `
@@ -644,12 +644,12 @@ function renderResults(horario) {
         ${yLines}
         <defs>
           <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#0891b2" stop-opacity="0.18"/>
-            <stop offset="100%" stop-color="#0891b2" stop-opacity="0.02"/>
+            <stop offset="0%" stop-color="#2171b5" stop-opacity="0.18"/>
+            <stop offset="100%" stop-color="#2171b5" stop-opacity="0.02"/>
           </linearGradient>
         </defs>
         <path d="${areaD}" fill="url(#areaGrad)"/>
-        <path d="${pathD}" fill="none" stroke="#0891b2" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+        <path d="${pathD}" fill="none" stroke="#2171b5" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
         ${dots}
         ${xLabels}
       </svg>`;
