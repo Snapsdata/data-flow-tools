@@ -56,44 +56,58 @@ body {
 .module-card {
   background: #fff;
   border: 1px solid #e0e0e0;
-  border-radius: 12px;
+  border-radius: 14px;
   overflow: hidden;
   cursor: pointer;
-  transition: transform .17s ease, box-shadow .17s ease, border-color .17s ease;
+  transition: transform .18s ease, box-shadow .2s ease, border-color .18s ease;
   text-decoration: none;
   display: flex;
   flex-direction: column;
   color: inherit;
+  position: relative;
 }
 .module-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 16px 48px rgba(0,0,0,.1);
-  border-color: #aaa;
+  transform: translateY(-5px);
+  box-shadow: 0 20px 56px rgba(0,0,0,.11);
+  border-color: #bbb;
 }
-.module-card:active { transform: translateY(-1px); }
+.module-card:active { transform: translateY(-2px); }
 
 .module-body {
-  padding: 28px 26px 22px;
+  padding: 26px 24px 20px;
   flex: 1;
-  border-left: 3px solid #111;
 }
-.module-card:nth-child(2) .module-body { border-left-color: #555; }
 
-.module-icon { font-size: 30px; margin-bottom: 14px; display: block; }
-.module-title { font-size: 15px; font-weight: 800; color: #111; margin-bottom: 7px; letter-spacing: -.2px; }
-.module-desc  { font-size: 12px; color: #888; line-height: 1.65; }
+/* Icono SVG por módulo */
+.module-icon-wrap {
+  width: 48px; height: 48px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 16px;
+  flex-shrink: 0;
+}
+.module-icon-wrap svg { width: 24px; height: 24px; }
+
+.module-title { font-size: 14px; font-weight: 800; color: #111; margin-bottom: 6px; letter-spacing: -.2px; }
+.module-desc  { font-size: 11px; color: #888; line-height: 1.7; }
 
 .module-foot {
-  padding: 13px 26px;
+  padding: 12px 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #fafafa;
   border-top: 1px solid #f0f0f0;
 }
-.module-tag   { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #bbb; }
-.module-arrow { font-size: 15px; color: #ccc; transition: transform .14s, color .14s; }
-.module-card:hover .module-arrow { transform: translateX(5px); color: #666; }
+.module-tag { font-size: 9px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #ccc; }
+.module-arrow {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: #f5f5f5; color: #999;
+  font-size: 13px;
+  transition: all .15s;
+  flex-shrink: 0;
+}
+.module-card:hover .module-arrow { background: #111; color: #fff; transform: translateX(2px); }
 
 .footer {
   padding: 18px 40px;
@@ -125,26 +139,59 @@ body {
 
   <div class="modules">
 
+    <!-- Analizador de Ventas -->
     <a class="module-card" href="analizador.html" target="_blank">
       <div class="module-body">
-        <span class="module-icon">📊</span>
+        <div class="module-icon-wrap" style="background:#f0fdf4;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 3v18h18"/><path d="M7 16l4-4 4 4 4-4"/>
+          </svg>
+        </div>
         <div class="module-title">Analizador de Ventas</div>
-        <div class="module-desc">Analiza cortes de caja SICAR en PDF. Genera tarjetas de coaching por tienda con detección de monedero, horas pico, productos sin gorra y análisis semanal.</div>
+        <div class="module-desc">Analiza cortes de caja SICAR en PDF. Genera tarjetas de coaching con detección de monedero, horas pico y productos sin gorra.</div>
       </div>
       <div class="module-foot">
-        <span class="module-tag">v5.16 · PDF · Diario / Semanal</span>
+        <span class="module-tag">v5.16 · PDF · Diario</span>
         <span class="module-arrow">→</span>
       </div>
     </a>
 
-    <a class="module-card" href="reporte-semanal.html" target="_blank">
+    <!-- Radar de Cobertura -->
+    <a class="module-card" href="radar-cobertura.html" target="_blank">
       <div class="module-body">
-        <span class="module-icon">📁</span>
-        <div class="module-title">Reporte Semanal de Gorras</div>
-        <div class="module-desc">Consolida reportes Excel de las 27 tiendas. Resumen del periodo, top 10 marcas y cantidades ordenadas listas para pegar en tu hoja de seguimiento.</div>
+        <div class="module-icon-wrap" style="background:#eff6ff;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#1d4ed8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="4" height="18" rx="1"/>
+            <rect x="10" y="8" width="4" height="13" rx="1"/>
+            <rect x="17" y="5" width="4" height="16" rx="1"/>
+          </svg>
+        </div>
+        <div class="module-title">Radar de Cobertura</div>
+        <div class="module-desc">Heatmap días × horas, barras pico/valle y curva diaria. Base para planificar coberturas de plantilla según demanda real.</div>
       </div>
       <div class="module-foot">
-        <span class="module-tag">v1.7 · Excel · 27 tiendas</span>
+        <span class="module-tag">v1.1 · PDF · Semanal / Mensual</span>
+        <span class="module-arrow">→</span>
+      </div>
+    </a>
+
+    <!-- Reporte Semanal -->
+    <a class="module-card" href="reporte-semanal.html" target="_blank">
+      <div class="module-body">
+        <div class="module-icon-wrap" style="background:#fafaf0;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#ca8a04" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14,2 14,8 20,8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+            <polyline points="10,9 9,9 8,9"/>
+          </svg>
+        </div>
+        <div class="module-title">Reporte Semanal de Gorras</div>
+        <div class="module-desc">Consolida los Excel de las 27 tiendas. Resumen del periodo, top 10 marcas y cantidades listas para pegar en tu hoja.</div>
+      </div>
+      <div class="module-foot">
+        <span class="module-tag">v1.8 · Excel · 27 tiendas</span>
         <span class="module-arrow">→</span>
       </div>
     </a>
