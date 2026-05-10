@@ -11,15 +11,15 @@ body { font-family: -apple-system, 'Helvetica Neue', Arial, sans-serif; font-siz
 .shell { max-width: 860px; margin: 0 auto; padding: 32px 20px 120px; }
 
 /* ── HEADER ── */
-.header { display: flex; align-items: center; justify-content: space-between; padding-bottom: 18px; border-bottom: 2px solid #111; margin-bottom: 24px; }
-.logo { display: flex; align-items: center; gap: 12px; }
-.logo img { height: 28px; width: auto; }
-.logo-fallback { font-size: 18px; font-weight: 800; letter-spacing: 4px; color: #111; text-transform: uppercase; }
+.header { display: flex; align-items: center; justify-content: space-between; padding-bottom: 16px; border-bottom: 1px solid #ddd; margin-bottom: 24px; }
+.logo { display: flex; flex-direction: column; gap: 2px; }
+.logo img { height: 24px; width: auto; }
+.logo-fallback { font-size: 20px; font-weight: 800; letter-spacing: 4px; color: #111; text-transform: uppercase; line-height: 1; }
 .header-right { display: flex; align-items: center; gap: 10px; }
-.header-sub { font-size: 10px; color: #aaa; letter-spacing: 1px; text-transform: uppercase; }
+.header-sub { font-size: 9px; color: #bbb; letter-spacing: 1.5px; text-transform: uppercase; margin-top: 2px; }
 .period-tag { font-size: 11px; color: #888; background: #fff; border: 1px solid #ddd; border-radius: 4px; padding: 4px 10px; }
-.btn-cfg { font-family: inherit; font-size: 11px; font-weight: 600; color: #888; background: #fff; border: 1px solid #ddd; border-radius: 5px; padding: 6px 12px; cursor: pointer; display: flex; align-items: center; gap: 5px; transition: all .12s; }
-.btn-cfg:hover { border-color: #999; color: #444; }
+.btn-cfg { font-family: inherit; font-size: 10px; font-weight: 600; color: #999; background: transparent; border: 1px solid #e0e0e0; border-radius: 4px; padding: 5px 10px; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all .12s; white-space: nowrap; letter-spacing: 0.3px; }
+.btn-cfg:hover { border-color: #aaa; color: #444; background: #fafafa; }
 .btn-cfg.active { background: #111; color: #fff; border-color: #111; }
 
 /* ── ZONA CARGA ── */
@@ -89,12 +89,12 @@ body { font-family: -apple-system, 'Helvetica Neue', Arial, sans-serif; font-siz
 .banner ul li:last-child { border: none; }
 
 /* ── RESUMEN PERIODO ── */
-.periodo-card { background: #111; border-radius: 10px; margin-bottom: 14px; padding: 16px 22px; display: flex; align-items: stretch; flex-wrap: wrap; gap: 0; }
-.periodo-pill { display: flex; flex-direction: column; justify-content: center; padding: 4px 20px 4px 0; }
+.periodo-card { background: #111; border-radius: 10px; margin-bottom: 14px; padding: 22px 28px; display: flex; align-items: stretch; flex-wrap: wrap; gap: 0; }
+.periodo-pill { display: flex; flex-direction: column; justify-content: center; padding: 4px 28px 4px 0; }
 .periodo-pill:first-child { padding-left: 0; }
-.periodo-label { font-size: 9px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,.35); margin-bottom: 3px; }
-.periodo-value { font-size: 13px; font-weight: 700; color: #fff; }
-.periodo-divider { width: 1px; background: rgba(255,255,255,.1); margin: 0 20px 0 0; align-self: stretch; min-height: 36px; }
+.periodo-label { font-size: 9px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,.35); margin-bottom: 6px; }
+.periodo-value { font-size: 20px; font-weight: 800; color: #fff; line-height: 1; }
+.periodo-divider { width: 1px; background: rgba(255,255,255,.1); margin: 0 28px 0 0; align-self: stretch; min-height: 44px; }
 .periodo-best .periodo-value { color: #7fffb2; }
 
 /* ── STATS ── */
@@ -223,7 +223,14 @@ body { font-family: -apple-system, 'Helvetica Neue', Arial, sans-serif; font-siz
 .toast { position: fixed; bottom: 24px; right: 24px; background: #111; color: #fff; font-size: 12px; font-weight: 600; padding: 10px 18px; border-radius: 6px; box-shadow: 0 8px 32px rgba(0,0,0,.2); opacity: 0; transform: translateY(8px); transition: all .22s ease; pointer-events: none; z-index: 9999; }
 .toast.on { opacity: 1; transform: translateY(0); }
 
-::-webkit-scrollbar { width: 4px; height: 4px; }
+/* TOP MARCAS */
+.marca-bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.marca-rank { font-size: 10px; font-weight: 700; color: #ccc; min-width: 18px; text-align: right; }
+.marca-name { font-size: 12px; font-weight: 600; min-width: 140px; color: #111; }
+.marca-bar-wrap { flex: 1; background: #f0f0f0; border-radius: 99px; height: 7px; overflow: hidden; }
+.marca-bar-fill { height: 100%; background: #111; border-radius: 99px; transition: width .4s ease; }
+.marca-qty { font-size: 12px; font-weight: 700; color: #111; min-width: 40px; text-align: right; font-variant-numeric: tabular-nums; }
+.marca-pct { font-size: 10px; color: #aaa; min-width: 36px; text-align: right; }
 ::-webkit-scrollbar-thumb { background: #ddd; border-radius: 99px; }
 @media(max-width:600px){ .stats{ grid-template-columns:1fr; } .split-panel{ grid-template-columns:1fr; } .periodo-card{ flex-direction:column; gap:10px; } .periodo-divider{ display:none; } }
 </style>
@@ -237,13 +244,11 @@ body { font-family: -apple-system, 'Helvetica Neue', Arial, sans-serif; font-siz
       <img src="https://www.snapsmx.com/web/image/website/1/logo/SNAPS?unique=6e53ede" alt="SNAPS"
            onerror="this.style.display='none';document.getElementById('logoFallback').style.display='block'">
       <span class="logo-fallback" id="logoFallback" style="display:none">SNAPS</span>
+      <span class="header-sub">Reporte Semanal · v1.7</span>
     </div>
     <div class="header-right">
-      <div>
-        <div class="header-sub">Reporte Semanal · v1.7</div>
-        <div class="period-tag" id="periodTag" style="margin-top:4px">Sin procesar</div>
-      </div>
-      <button class="btn-cfg" id="btnOpenCfg">⚙️ Configurar tiendas</button>
+      <div class="period-tag" id="periodTag">Sin procesar</div>
+      <button class="btn-cfg" id="btnOpenCfg">⚙️ Tiendas</button>
     </div>
   </div>
 
@@ -287,7 +292,7 @@ body { font-family: -apple-system, 'Helvetica Neue', Arial, sans-serif; font-siz
   <!-- RESULTS -->
   <div id="results" style="display:none">
 
-    <div class="banner banner-warn" id="warnBanner"><strong>Archivos no reconocidos</strong><ul id="warnList"></ul></div>
+    <div class="banner banner-warn" id="warnBanner"><strong>⚠️ Nombres de archivo no corresponden — verificar con el punto de venta</strong><ul id="warnList"></ul></div>
     <div class="banner banner-dup"  id="dupBanner"><strong>Reportes duplicados</strong><ul id="dupList"></ul></div>
     <div class="banner banner-date" id="fechasBanner"><strong>Fechas incorrectas</strong><ul id="fechasList"></ul></div>
 
@@ -319,11 +324,7 @@ body { font-family: -apple-system, 'Helvetica Neue', Arial, sans-serif; font-siz
       </div>
     </div>
 
-    <div class="stats">
-      <div class="stat"><div class="stat-label">Tiendas</div><div class="stat-value" id="statT">0</div></div>
-      <div class="stat dark"><div class="stat-label">Total gorras</div><div class="stat-value" id="statG">0</div></div>
-      <div class="stat"><div class="stat-label">Promedio</div><div class="stat-value" id="statA">0</div></div>
-    </div>
+
 
     <div class="cpanel" id="cpDesglose">
       <div class="cpanel-head" onclick="toggleCP('cpDesglose')">
@@ -341,7 +342,18 @@ body { font-family: -apple-system, 'Helvetica Neue', Arial, sans-serif; font-siz
       </div>
     </div>
 
-    <div class="cpanel" id="cpCopy">
+    <div class="cpanel open" id="cpMarcas">
+      <div class="cpanel-head" onclick="toggleCP('cpMarcas')">
+        <div class="cpanel-head-left">
+          <span class="cpanel-title">🏷️ Top 10 marcas</span>
+          <span class="cpanel-meta" id="metaMarcas">—</span>
+        </div>
+        <span class="cpanel-arrow">▼</span>
+      </div>
+      <div class="cpanel-body">
+        <div id="marcasBody" style="padding:14px 18px;"></div>
+      </div>
+    </div>
       <div class="cpanel-head" onclick="toggleCP('cpCopy')">
         <div class="cpanel-head-left">
           <span class="cpanel-title">Copiar para pegar en hoja</span>
@@ -429,7 +441,7 @@ let TIENDAS = {
   'AME':   { name:'LAS AMERICAS',     aliases:['AME','AMERICAS','LASAMERICAS'] },
   'FOR':   { name:'FORUM CUERNA',     aliases:['FOR','FORUM','FCUERNA','FORUMCUERNA'] },
   'ALTA':  { name:'ALTABRISA MERIDA', aliases:['ALTA','ALTABRISA','ALTAM'] },
-  'TPARK': { name:'THE PARK SLP',     aliases:['TPARK','THEPARK','PARK','SLP'] },
+  'TPARK': { name:'THE PARK SLP',     aliases:['TPARK','TPAK','THEPARK','PARK','SLP','THEPARKS'] },
   'ARA':   { name:'ARAGON',           aliases:['ARA','ARAGON'] },
   'CDJ':   { name:'CIUDAD JARDIN',    aliases:['CDJ','CIUDADJARDIN','CJN'] },
   'OCAN':  { name:'OUTLET CANCUN',    aliases:['OCAN','OUTLET','CANCUN','OCN'] },
@@ -582,7 +594,7 @@ btnProcess.addEventListener('click', async () => {
 
   const unknown=rawResults.filter(r=>!r.error&&!r.pre);
   if(unknown.length){
-    document.getElementById('warnList').innerHTML=unknown.map(r=>`<li>${r.archivo} — token <strong>${r.token}</strong> no reconocido · agrégalo en ⚙️ Configurar tiendas</li>`).join('');
+    document.getElementById('warnList').innerHTML=unknown.map(r=>`<li><strong>${r.archivo}</strong> — el nombre del archivo no coincide con ninguna tienda registrada (token detectado: <strong>${r.token}</strong>). Verificar nomenclatura con el punto de venta o agregar el prefijo en ⚙️ Configurar tiendas.</li>`).join('');
     document.getElementById('warnBanner').classList.add('on');
   } else { document.getElementById('warnBanner').classList.remove('on'); }
 
@@ -610,9 +622,6 @@ btnProcess.addEventListener('click', async () => {
   const avg=finalResults.length?Math.round(total/finalResults.length):0;
   const best=finalResults.length?finalResults.reduce((a,b)=>a.gorras>b.gorras?a:b):null;
 
-  document.getElementById('statT').textContent=finalResults.length;
-  document.getElementById('statG').textContent=total.toLocaleString();
-  document.getElementById('statA').textContent=avg.toLocaleString();
   document.getElementById('metaD').textContent=finalResults.length+' tiendas';
   document.getElementById('periodoValor').textContent=correctPeriod||'—';
   document.getElementById('periodoTiendas').textContent=finalResults.length+' / '+ORDEN.length;
@@ -620,7 +629,7 @@ btnProcess.addEventListener('click', async () => {
   document.getElementById('periodoPromedio').textContent=avg.toLocaleString()+' prom.';
   document.getElementById('periodoBest').textContent=best?best.tienda+' · '+best.gorras.toLocaleString():'—';
 
-  renderResultTable(finalResults); renderSplitPanel(finalResults);
+  renderResultTable(finalResults); renderSplitPanel(finalResults); renderMarcas(finalResults);
   resultsEl.style.display='block';
   resultsEl.scrollIntoView({behavior:'smooth',block:'start'});
 });
@@ -652,11 +661,42 @@ async function processOne(fd){
     const pre=resolvePrefix(token);
     const tienda=pre&&TIENDAS[pre]?TIENDAS[pre].name:token;
     let gorras=0;
-    for(const row of rows){if(row[10]&&String(row[10]).trim().toUpperCase()==='GORRAS'&&row[22])gorras+=Number(row[22])||0;}
-    return{tienda,gorras,archivo:fd.name,period,token,pre,error:false};
-  }catch(e){return{tienda:fd.name,gorras:0,archivo:fd.name,period:'',token:fd.name,pre:null,error:true};}
+    const marcas={};
+    for(const row of rows){
+      if(row[10]&&String(row[10]).trim().toUpperCase()==='GORRAS'&&row[22]){
+        const qty=Number(row[22])||0;
+        gorras+=qty;
+        // col[9] = marca, col[22] = cantidad vendida
+        const marca=row[9]?String(row[9]).trim():'SIN MARCA';
+        if(marca) marcas[marca]=(marcas[marca]||0)+qty;
+      }
+    }
+    return{tienda,gorras,marcas,archivo:fd.name,period,token,pre,error:false};
+  }catch(e){return{tienda:fd.name,gorras:0,marcas:{},archivo:fd.name,period:'',token:fd.name,pre:null,error:true};}
 }
-function setProgress(done,total){const p=total?Math.round(done/total*100):0;progFill.style.width=p+'%';progLabel.textContent=`Procesando ${done} de ${total}...`;progPct.textContent=p+'%';}
+function renderMarcas(fr){
+  // Consolidar marcas de todos los reportes
+  const total={};
+  fr.forEach(r=>{ if(r.marcas) for(const[m,q] of Object.entries(r.marcas)) total[m]=(total[m]||0)+q; });
+  const sorted=Object.entries(total).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  const max=sorted[0]?sorted[0][1]:1;
+  const sumTotal=Object.values(total).reduce((s,v)=>s+v,0);
+  document.getElementById('metaMarcas').textContent=Object.keys(total).length+' marcas detectadas';
+  const body=document.getElementById('marcasBody');
+  if(!sorted.length){ body.innerHTML='<div style="font-size:12px;color:#aaa;">Sin datos de marca disponibles</div>'; return; }
+  body.innerHTML=sorted.map(([marca,qty],i)=>{
+    const pct=sumTotal?Math.round(qty/sumTotal*100):0;
+    const barW=Math.round(qty/max*100);
+    const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':'';
+    return `<div class="marca-bar-row">
+      <span class="marca-rank">${medal||('#'+(i+1))}</span>
+      <span class="marca-name">${marca}</span>
+      <div class="marca-bar-wrap"><div class="marca-bar-fill" style="width:${barW}%"></div></div>
+      <span class="marca-qty">${qty.toLocaleString()}</span>
+      <span class="marca-pct">${pct}%</span>
+    </div>`;
+  }).join('');
+}const p=total?Math.round(done/total*100):0;progFill.style.width=p+'%';progLabel.textContent=`Procesando ${done} de ${total}...`;progPct.textContent=p+'%';}
 function readFile(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>res(new Uint8Array(e.target.result));r.onerror=rej;r.readAsArrayBuffer(file);});}
 function formatDate(val){if(!val)return '';if(typeof val==='number'){const d=XLSX.SSF.parse_date_code(val);return`${d.d}/${d.m}/${d.y}`;}if(val instanceof Date)return`${val.getDate()}/${val.getMonth()+1}/${val.getFullYear()}`;return String(val).split('T')[0];}
 
