@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SNAPS · Radar de Cobertura v1.1</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<style>
+:root{
+  --bg:#f2f2f2;--surface:#fff;--surface2:#f8f8f8;
+  --border:#e5e5e5;--text:#111;--text2:#666;--muted:#aaa;
+  --accent:#1a56db;--accent-light:#eff6ff;
+  --red:#dc2626;--green:#16a34a;--amber:#d97706;
+  --mono:'Courier New',monospace;
+  --radius:8px;--radius-lg:12px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,'Helvetica Neue',Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;}
+
+.header{background:#111;height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;}
+.brand{display:flex;flex-direction:column;gap:1px;}
+.brand-name{font-size:15px;font-weight:800;letter-spacing:5px;color:#fff;text-transform:uppercase;line-height:1;}
+.brand-sub{font-size:8px;letter-spacing:2px;color:rgba(255,255,255,.28);text-transform:uppercase;}
+.header-right{display:flex;align-items:center;gap:10px;}
+.ver-tag{font-size:9px;color:rgba(255,255,255,.2);letter-spacing:1px;text-transform:uppercase;}
+.btn-back{font-family:inherit;font-size:10px;font-weight:600;color:rgba(255,255,255,.45);background:transparent;border:1px solid rgba(255,255,255,.15);border-radius:4px;padding:5px 10px;cursor:pointer;text-decoration:none;transition:all .12s;}
+.btn-back:hover{color:#fff;border-color:rgba(255,255,255,.4);}
+
+.shell{max-width:900px;margin:0 auto;padding:28px 20px 80px;}
+
+.upload-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:14px;}
+.upload-head{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.upload-title{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#555;}
+.file-count{font-size:11px;color:var(--muted);background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:3px 10px;}
+
+.drop{border:2px dashed #ddd;border-radius:var(--radius);padding:34px 20px;text-align:center;cursor:pointer;background:var(--surface2);position:relative;margin:16px 18px;transition:all .15s;}
+.drop:hover,.drop.over{border-color:#111;background:#f5f5f5;}
+.drop input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.drop-icon{font-size:24px;margin-bottom:8px;}
+.drop h3{font-size:14px;font-weight:700;margin-bottom:4px;}
+.drop p{font-size:11px;color:var(--muted);}
+
+.prog-wrap{display:none;padding:0 18px 14px;}
+.prog-wrap.on{display:block;}
+.prog-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-bottom:4px;}
+.prog-bg{height:3px;background:#e8e8e8;border-radius:99px;overflow:hidden;}
+.prog-fill{height:100%;background:#111;border-radius:99px;width:0%;transition:width .2s;}
+
+.chips-wrap{padding:0 18px 14px;display:flex;flex-wrap:wrap;gap:4px;}
+.chip{display:flex;align-items:center;gap:6px;padding:4px 8px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;font-size:10px;color:#555;}
+.chip.ok{border-color:#111;background:#f5f5f5;}
+.chip.err{border-color:var(--red);color:var(--red);}
+.chip.proc{color:var(--muted);}
+.chip-dot{width:5px;height:5px;border-radius:50%;background:#ddd;flex-shrink:0;}
+.chip.ok .chip-dot{background:#111;}
+.chip.err .chip-dot{background:var(--red);}
+.chip.proc .chip-dot{animation:blink .7s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+.chip-name{max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.chip-rm{background:none;border:none;color:#ccc;cursor:pointer;font-size:12px;padding:0;}
+.chip-rm:hover{color:var(--red);}
+
+.actions{display:flex;gap:8px;align-items:center;margin-bottom:20px;}
+.btn{font-family:inherit;font-size:12px;font-weight:700;padding:10px 22px;border-radius:6px;cursor:pointer;border:none;transition:all .12s;}
+.btn-primary{background:#111;color:#fff;}
+.btn-primary:hover:not(:disabled){background:#333;}
+.btn-ghost{background:#fff;color:#555;border:1px solid #ddd;}
+.btn-ghost:hover:not(:disabled){border-color:#999;color:#111;}
+.btn:disabled{opacity:.3;cursor:not-allowed;}
+.files-label{margin-left:auto;font-size:11px;color:var(--muted);}
+
+#results{display:none;}
+
+/* RESUMEN */
+.summary-bar{background:#111;border-radius:var(--radius-lg);padding:18px 24px;display:flex;flex-wrap:wrap;align-items:stretch;margin-bottom:14px;gap:0;}
+.sum-pill{display:flex;flex-direction:column;justify-content:center;padding:4px 24px 4px 0;}
+.sum-label{font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:4px;}
+.sum-value{font-size:15px;font-weight:800;color:#fff;line-height:1;}
+.sum-value.pico{color:#60a5fa;}
+.sum-value.valle{color:#f87171;}
+.sum-div{width:1px;background:rgba(255,255,255,.1);margin:0 24px 0 0;min-height:32px;align-self:stretch;}
+
+/* PANEL COLAPSABLE */
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:10px;overflow:hidden;}
+.panel-head{display:flex;align-items:center;justify-content:space-between;padding:13px 20px;cursor:pointer;user-select:none;transition:background .1s;}
+.panel-head:hover{background:var(--surface2);}
+.panel-hl{display:flex;align-items:center;gap:8px;}
+.panel-title{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#444;}
+.panel-meta{font-size:10px;color:var(--muted);background:#f0f0f0;border-radius:3px;padding:2px 7px;}
+.panel-arrow{font-size:10px;color:var(--muted);transition:transform .2s;}
+.panel.open .panel-arrow{transform:rotate(180deg);}
+.panel-body{display:none;border-top:1px solid #f0f0f0;}
+.panel.open .panel-body{display:block;}
+
+/* BARRAS POR HORA */
+.bars-container{padding:20px 22px;}
+.bar-row{display:grid;grid-template-columns:58px 1fr 70px 44px;gap:10px;align-items:center;margin-bottom:8px;}
+.bar-lbl{font-size:11px;font-family:var(--mono);color:var(--text2);text-align:right;}
+.bar-lbl.pico{color:var(--accent);font-weight:700;}
+.bar-lbl.valle{color:var(--red);font-weight:700;}
+.bar-outer{background:#f0f0f0;border-radius:4px;height:20px;overflow:hidden;}
+.bar-inner{height:20px;border-radius:4px;transition:width .6s ease;}
+.bar-val{font-size:11px;font-family:var(--mono);font-weight:700;color:var(--text);text-align:right;}
+.bar-val.pico{color:var(--accent);}
+.bar-val.valle{color:var(--red);}
+.bar-tag{font-size:9px;font-weight:700;padding:2px 5px;border-radius:3px;text-align:center;}
+.tag-pico{background:#eff6ff;color:var(--accent);}
+.tag-valle{background:#fff5f5;color:var(--red);}
+.tag-empty{opacity:0;}
+.bars-legend{display:flex;gap:16px;padding:10px 22px;border-top:1px solid #f5f5f5;font-size:10px;color:var(--muted);}
+.ldot{width:10px;height:10px;border-radius:2px;display:inline-block;margin-right:4px;vertical-align:middle;}
+
+/* HEATMAP */
+.hmap-container{padding:18px 20px;overflow-x:auto;}
+.hmap-table{border-collapse:collapse;font-size:9px;}
+.hmap-table th{font-family:var(--mono);color:var(--muted);padding:3px 4px;text-align:center;font-weight:600;}
+.hmap-table td.day-lbl{font-family:var(--mono);font-size:10px;color:var(--text2);padding:3px 10px 3px 0;white-space:nowrap;font-weight:500;}
+.hcell{width:44px;height:24px;border-radius:3px;text-align:center;font-weight:700;vertical-align:middle;line-height:24px;}
+.hmap-legend{display:flex;align-items:center;gap:10px;margin-top:12px;flex-wrap:wrap;font-size:10px;color:var(--muted);}
+.btn-dl{font-family:inherit;font-size:10px;font-weight:600;color:#888;background:#fff;border:1px solid #e0e0e0;border-radius:4px;padding:4px 10px;cursor:pointer;transition:all .12s;display:flex;align-items:center;gap:4px;white-space:nowrap;}
+.btn-dl:hover{border-color:#888;color:#111;}
+.hmap-table td.total-lbl{font-family:var(--mono);font-size:10px;color:#111;padding:4px 10px 4px 0;white-space:nowrap;font-weight:800;border-top:2px solid #e0e0e0;}
+.hmap-table td.total-cell{padding:2px;border-top:2px solid #e0e0e0;}
+.hcell-total{width:44px;height:24px;border-radius:4px;text-align:center;font-weight:800;vertical-align:middle;line-height:24px;font-size:10px;}
+.hldot{width:12px;height:12px;border-radius:2px;display:inline-block;margin-right:3px;vertical-align:middle;}
+
+/* CURVA */
+.curva-container{padding:18px 20px;}
+.curva-svg{width:100%;overflow:visible;}
+
+@media(max-width:600px){
+  .bar-row{grid-template-columns:46px 1fr 58px;}
+  .bar-tag{display:none;}
+  .summary-bar{flex-direction:column;gap:10px;}
+  .sum-div{display:none;}
+}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="brand">
+    <span class="brand-name">SNAPS</span>
+    <span class="brand-sub">Radar de Cobertura · v1.1</span>
+  </div>
+  <div class="header-right">
+    <span class="ver-tag">Patrones de venta · Planificación de turnos</span>
+    <a class="btn-back" href="index.html">← Dashboard</a>
+  </div>
+</div>
+
+<div class="shell">
+
+  <div class="upload-card">
+    <div class="upload-head">
+      <span class="upload-title">📅 Cargar cortes de caja — diarios o semanal</span>
+      <span class="file-count" id="fileCount">0 archivos</span>
+    </div>
+    <div class="drop" id="drop">
+      <input type="file" id="fileInput" accept=".pdf" multiple>
+      <div class="drop-icon">📄</div>
+      <h3>Arrastra los PDFs de corte de caja aquí</h3>
+      <p>Un PDF por día <strong>o</strong> un PDF semanal completo — la app detecta los días automáticamente</p>
+    </div>
+    <div class="prog-wrap" id="progWrap">
+      <div class="prog-labels"><span id="progLabel">Procesando...</span><span id="progPct">0%</span></div>
+      <div class="prog-bg"><div class="prog-fill" id="progFill"></div></div>
+    </div>
+    <div class="chips-wrap" id="chipsWrap"></div>
+  </div>
+
+  <div class="actions">
+    <button class="btn btn-primary" id="btnAnalizar" disabled>Analizar →</button>
+    <button class="btn btn-ghost" id="btnLimpiar">Limpiar</button>
+    <span class="files-label" id="filesLabel">0 archivos cargados</span>
+  </div>
+
+  <div id="results">
+
+    <!-- RESUMEN -->
+    <div class="summary-bar" id="summaryBar"></div>
+
+    <!-- BARRAS POR HORA -->
+    <div class="panel open" id="panelBarras">
+      <div class="panel-head" onclick="togglePanel('panelBarras')">
+        <div class="panel-hl">
+          <span class="panel-title">📊 Ventas por hora</span>
+          <span class="panel-meta" id="metaBarras">—</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <button class="btn-dl" onclick="event.stopPropagation();descargarPanel('panelBarras','ventas-por-hora')" title="Descargar imagen">⬇ PNG</button>
+          <span class="panel-arrow">▼</span>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="bars-container" id="barsBody"></div>
+        <div class="bars-legend">
+          <span><span class="ldot" style="background:#1a56db;"></span>Hora pico</span>
+          <span><span class="ldot" style="background:#93c5fd;"></span>Alta actividad</span>
+          <span><span class="ldot" style="background:#bfdbfe;"></span>Media</span>
+          <span><span class="ldot" style="background:#f0f0f0;border:1px solid #e0e0e0;"></span>Baja</span>
+          <span><span class="ldot" style="background:#fee2e2;border:1px solid #fecaca;"></span>Hora valle</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- HEATMAP -->
+    <div class="panel open" id="panelHeatmap">
+      <div class="panel-head" onclick="togglePanel('panelHeatmap')">
+        <div class="panel-hl">
+          <span class="panel-title">🔥 Heatmap días × horas</span>
+          <span class="panel-meta" id="metaHeatmap">—</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <button class="btn-dl" onclick="event.stopPropagation();descargarPanel('panelHeatmap','heatmap-horas')" title="Descargar imagen">⬇ PNG</button>
+          <span class="panel-arrow">▼</span>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="hmap-container" id="hmapBody"></div>
+      </div>
+    </div>
+
+    <!-- CURVA DIARIA -->
+    <div class="panel open" id="panelCurva">
+      <div class="panel-head" onclick="togglePanel('panelCurva')">
+        <div class="panel-hl">
+          <span class="panel-title">📈 Venta acumulada por día</span>
+          <span class="panel-meta" id="metaCurva">—</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <button class="btn-dl" onclick="event.stopPropagation();descargarPanel('panelCurva','curva-diaria')" title="Descargar imagen">⬇ PNG</button>
+          <span class="panel-arrow">▼</span>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="curva-container" id="curvaBody"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+function amt(s){return parseFloat((s||'0').replace(/,/g,''))||0;}
+function fmt(n){if(n===null||n===undefined)return'—';return'$'+Math.round(n).toLocaleString('es-MX');}
+
+async function extractText(file){
+  const ab=await file.arrayBuffer();
+  const pdf=await pdfjsLib.getDocument({data:ab}).promise;
+  let t='';
+  for(let i=1;i<=pdf.numPages;i++){
+    const p=await pdf.getPage(i);
+    const c=await p.getTextContent();
+    // ── Reconstruir por coordenada Y ──────────────────────────────────────
+    // PDF.js entrega cada ítem con transform:[a,b,c,d,x,y]
+    // donde y es la posición vertical. Agrupamos por Y (tolerancia 4px)
+    // y ordenamos cada línea por X para reproducir el orden visual correcto.
+    // Esto soluciona PDFs con columnas que confunden el join(' ') simple.
+    const rows={};
+    for(const item of c.items){
+      if(!item.str||!item.str.trim())continue;
+      const y=Math.round((item.transform[5])/4)*4; // agrupar en grupos de 4pt
+      if(!rows[y])rows[y]=[];
+      rows[y].push({x:item.transform[4],str:item.str.trim()});
+    }
+    // Ordenar líneas de arriba a abajo (Y mayor = arriba en PDF = menor número)
+    const sortedYs=Object.keys(rows).map(Number).sort((a,b)=>b-a);
+    const lines=sortedYs.map(y=>{
+      const words=rows[y].sort((a,b)=>a.x-b.x);
+      return words.map(w=>w.str).join(' ');
+    });
+    t+=lines.join('\n')+'\n';
+  }
+  return t;
+}
+
+function parseCorte(text){
+  const horario=[];
+  const folioMap={};
+
+  // Patrón principal: DD/MM/YYYY HH:MM EF/TA VEN USUARIO $ monto
+  // Seguido de: TIC DD/MM/YYYY folio CLIENTE
+  const lines = text.split('\n');
+
+  for(let i=0;i<lines.length;i++){
+    const line = lines[i].trim();
+
+    // Línea de ticket: fecha hora tipo VEN usuario $ monto
+    const mTk = line.match(/^(\d{2}\/\d{2}\/\d{4})\s+(\d{2}:\d{2})\s+(EF|TA|CH|TR)\s+VEN\s+\S+\s+\$\s*([\d,]+\.?\d*)/);
+    if(mTk){
+      const fecha = mTk[1]; // DD/MM/YYYY
+      const hora  = mTk[2]; // HH:MM
+      const tipo  = mTk[3];
+      const monto = parseFloat(mTk[4].replace(/,/g,''))||0;
+
+      // Buscar folio en la siguiente línea: TIC DD/MM/YYYY folio CLIENTE
+      let folio='';
+      if(i+1<lines.length){
+        const mFol = lines[i+1].trim().match(/^TIC\s+\d{2}\/\d{2}\/\d{4}\s+(\d+)/);
+        if(mFol) folio = mFol[1];
+      }
+
+      if(folio){
+        if(folioMap[folio]){
+          folioMap[folio].monto += monto;
+          if(!folioMap[folio].tipos.includes(tipo)) folioMap[folio].tipos.push(tipo);
+        } else {
+          folioMap[folio] = {fecha, hora, monto, folio, tipos:[tipo]};
+        }
+      } else {
+        // Sin folio, agregar directamente
+        horario.push({fecha, hora, monto, folio:'', tipoPago:tipo});
+      }
+      continue;
+    }
+
+    // Línea de corte diario: DD/MM/YYYY HH:MM Caja N USUARIO $ total
+    const mCorte = line.match(/^(\d{2}\/\d{2}\/\d{4})\s+(\d{2}:\d{2})\s+Caja\s+\d+\s+\S+\s+\$\s*([\d,]+\.?\d*)/);
+    // Solo registrar, no agregar al horario
+  }
+
+  // Consolidar folios únicos
+  for(const entry of Object.values(folioMap)){
+    horario.push({
+      fecha: entry.fecha,
+      hora:  entry.hora,
+      monto: entry.monto,
+      folio: entry.folio,
+      tipoPago: entry.tipos.length>1?'Mixto':entry.tipos[0]
+    });
+  }
+
+  // Calcular totales por forma de pago
+  const totEf = text.match(/Efectivo\s*\$\s*([\d,]+\.?\d*)/g)||[];
+  const totTa = text.match(/Tarjeta\s*\$\s*([\d,]+\.?\d*)/g)||[];
+  const efectivo = totEf.reduce((s,m)=>s+parseFloat((m.match(/[\d,]+\.?\d*/)||['0'])[0].replace(/,/g,''))||0,0);
+  const tarjeta  = totTa.reduce((s,m)=>s+parseFloat((m.match(/[\d,]+\.?\d*/)||['0'])[0].replace(/,/g,''))||0,0);
+  const total = efectivo + tarjeta;
+
+  // Extraer periodo
+  const mPer = text.match(/Periodo:\s*(\d{2}\/\d{2}\/\d{4})\s*-\s*(\d{2}\/\d{2}\/\d{4})/);
+  const periodoInicio = mPer?mPer[1]:'';
+  const periodoFin    = mPer?mPer[2]:'';
+
+  return {horario, total, efectivo, tarjeta, periodoInicio, periodoFin,
+          folios:Object.keys(folioMap), cancelaciones:0};
+}
+
+// ── ESTADO ────────────────────────────────────────────────────────────────
+let filesData = [];
+
+// ── CARGA DE ARCHIVOS ─────────────────────────────────────────────────────
+const drop = document.getElementById('drop');
+const fileInput = document.getElementById('fileInput');
+drop.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('over'); });
+drop.addEventListener('dragleave', () => drop.classList.remove('over'));
+drop.addEventListener('drop', e => { e.preventDefault(); drop.classList.remove('over'); addFiles([...e.dataTransfer.files]); });
+fileInput.addEventListener('change', () => { addFiles([...fileInput.files]); fileInput.value=''; });
+
+function addFiles(files) {
+  files.forEach(f => {
+    if (!f.name.toLowerCase().endsWith('.pdf')) return;
+    if (filesData.find(x => x.name === f.name)) return;
+    filesData.push({ file:f, name:f.name, status:'pending' });
+  });
+  renderChips(); updateCount();
+  document.getElementById('btnAnalizar').disabled = filesData.length === 0;
+}
+
+function updateCount() {
+  const n = filesData.length;
+  document.getElementById('fileCount').textContent = n + ' archivos';
+  document.getElementById('filesLabel').textContent = n + ' archivo' + (n!==1?'s':'') + ' cargados';
+}
+
+function renderChips() {
+  const wrap = document.getElementById('chipsWrap');
+  wrap.innerHTML = '';
+  filesData.forEach((fd, i) => {
+    const c = document.createElement('div');
+    c.className = 'chip ' + (fd.status==='ok'?'ok':fd.status==='err'?'err':fd.status==='proc'?'proc':'');
+    c.innerHTML = `<span class="chip-dot"></span><span class="chip-name" title="${fd.name}">${fd.name}</span><button class="chip-rm" data-i="${i}">×</button>`;
+    wrap.appendChild(c);
+  });
+  wrap.querySelectorAll('.chip-rm').forEach(b => {
+    b.addEventListener('click', e => {
+      e.stopPropagation();
+      filesData.splice(+b.dataset.i, 1);
+      renderChips(); updateCount();
+      document.getElementById('btnAnalizar').disabled = filesData.length === 0;
+    });
+  });
+}
+
+document.getElementById('btnLimpiar').addEventListener('click', () => {
+  filesData = []; renderChips(); updateCount();
+  document.getElementById('btnAnalizar').disabled = true;
+  document.getElementById('results').style.display = 'none';
+});
+
+// ── ANALIZAR ──────────────────────────────────────────────────────────────
+document.getElementById('btnAnalizar').addEventListener('click', async () => {
+  if (!filesData.length) return;
+  document.getElementById('btnAnalizar').disabled = true;
+  filesData.forEach(fd => fd.status = 'proc');
+  renderChips();
+
+  const progWrap = document.getElementById('progWrap');
+  progWrap.classList.add('on');
+  let done = 0;
+
+  const allHorario = []; // todos los tickets de todos los días
+
+  for (let i = 0; i < filesData.length; i++) {
+    const fd = filesData[i];
+    try {
+      const text = await extractText(fd.file);
+      const cd = parseCorte(text);
+      if (cd.horario && cd.horario.length) {
+        allHorario.push(...cd.horario);
+      }
+      fd.status = 'ok';
+    } catch(e) {
+      fd.status = 'err';
+    }
+    done++;
+    const p = Math.round(done/filesData.length*100);
+    document.getElementById('progFill').style.width = p + '%';
+    document.getElementById('progLabel').textContent = `Procesando ${done} de ${filesData.length}...`;
+    document.getElementById('progPct').textContent = p + '%';
+    renderChips();
+  }
+
+  progWrap.classList.remove('on');
+  document.getElementById('btnAnalizar').disabled = false;
+
+  if (!allHorario.length) {
+    alert('No se encontraron datos de horario en los archivos cargados.');
+    return;
+  }
+
+  renderResults(allHorario);
+});
+
+// ── RENDERIZADO ───────────────────────────────────────────────────────────
+function renderResults(horario) {
+  // 1. Agrupar por hora
+  const porHora = {};
+  for (let h = 9; h <= 22; h++) porHora[h] = { tickets:0, monto:0 };
+  horario.forEach(t => {
+    const h = parseInt((t.hora||'00').split(':')[0]);
+    if (h >= 9 && h <= 22) {
+      porHora[h].tickets++;
+      porHora[h].monto += t.monto || 0;
+    }
+  });
+
+  // 2. Horas activas
+  const horas = Object.entries(porHora)
+    .filter(([,v]) => v.tickets > 0)
+    .sort((a,b) => b[1].tickets - a[1].tickets);
+
+  const maxTickets = horas.length ? horas[0][1].tickets : 1;
+  const minTickets = horas.length ? horas[horas.length-1][1].tickets : 0;
+  const horaPico  = horas.length ? horas[0][0] : '—';
+  const horaValle = horas.length ? horas[horas.length-1][0] : '—';
+  const totalTickets = horario.length;
+  const totalMonto = horario.reduce((s,t) => s + (t.monto||0), 0);
+
+  // Fechas únicas
+  const fechas = [...new Set(horario.map(t => t.fecha).filter(Boolean))].sort();
+
+  // 3. RESUMEN
+  document.getElementById('summaryBar').innerHTML = `
+    <div class="sum-pill"><div class="sum-label">Periodo</div><div class="sum-value">${fechas.length > 1 ? fechas[0]+' — '+fechas[fechas.length-1] : (fechas[0]||'—')}</div></div>
+    <div class="sum-div"></div>
+    <div class="sum-pill"><div class="sum-label">Días analizados</div><div class="sum-value">${fechas.length}</div></div>
+    <div class="sum-div"></div>
+    <div class="sum-pill"><div class="sum-label">Total tickets</div><div class="sum-value">${totalTickets.toLocaleString()}</div></div>
+    <div class="sum-div"></div>
+    <div class="sum-pill"><div class="sum-label">Venta total</div><div class="sum-value">${fmt(totalMonto)}</div></div>
+    <div class="sum-div"></div>
+    <div class="sum-pill"><div class="sum-label">🔵 Hora pico</div><div class="sum-value pico">${horaPico}:00 h</div></div>
+    <div class="sum-div"></div>
+    <div class="sum-pill"><div class="sum-label">🔴 Hora valle</div><div class="sum-value valle">${horaValle}:00 h</div></div>
+  `;
+
+  // 4. BARRAS POR HORA (ordenadas de mayor a menor)
+  document.getElementById('metaBarras').textContent = horas.length + ' horas activas · ' + fechas.length + ' día' + (fechas.length!==1?'s':'');
+  const barsHTML = horas.map(([hora, data]) => {
+    const pct = maxTickets > 0 ? Math.round(data.tickets/maxTickets*100) : 0;
+    const esPico  = hora == horaPico;
+    const esValle = hora == horaValle;
+    let barColor, tagHTML = '';
+    if (esPico)       { barColor='#1a56db'; tagHTML=`<span class="bar-tag tag-pico">PICO</span>`; }
+    else if (esValle) { barColor='#fca5a5'; tagHTML=`<span class="bar-tag tag-valle">VALLE</span>`; }
+    else if (pct>60)  { barColor='#60a5fa'; tagHTML=`<span class="bar-tag tag-empty">·</span>`; }
+    else if (pct>30)  { barColor='#93c5fd'; tagHTML=`<span class="bar-tag tag-empty">·</span>`; }
+    else              { barColor='#bfdbfe'; tagHTML=`<span class="bar-tag tag-empty">·</span>`; }
+    return `<div class="bar-row">
+      <span class="bar-lbl ${esPico?'pico':esValle?'valle':''}">${hora}:00 h</span>
+      <div class="bar-outer"><div class="bar-inner" style="width:${pct}%;background:${barColor};"></div></div>
+      <span class="bar-val ${esPico?'pico':esValle?'valle':''}">${data.tickets} vtas</span>
+      ${tagHTML}
+    </div>`;
+  }).join('');
+  document.getElementById('barsBody').innerHTML = barsHTML || '<div style="padding:20px;color:#aaa;font-size:12px;">Sin datos</div>';
+
+  // 5. HEATMAP días × horas
+  const diasSemana = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+  const horasOrden = Array.from({length:14},(_,i)=>i+9); // 9-22
+  
+  // Agrupar por fecha y hora
+  const porFechaHora = {};
+  horario.forEach(t => {
+    const fecha = t.fecha;
+    const h = parseInt((t.hora||'00').split(':')[0]);
+    if (!fecha || h < 9 || h > 22) return;
+    if (!porFechaHora[fecha]) porFechaHora[fecha] = {};
+    porFechaHora[fecha][h] = (porFechaHora[fecha][h] || 0) + 1;
+  });
+
+  // Ordenar fechas DD/MM/YYYY correctamente
+  const fechasOrdenadas = Object.keys(porFechaHora).sort((a,b)=>{
+    const [da,ma,ya]=a.split('/'); const [db,mb,yb]=b.split('/');
+    return new Date(ya,ma-1,da)-new Date(yb,mb-1,db);
+  });
+  const maxCell = Math.max(...fechasOrdenadas.flatMap(f => horasOrden.map(h => porFechaHora[f][h]||0)));
+
+  function cellColor(v) {
+    if (!v) return {bg:'#f3f4f6',fg:'transparent'};
+    const r = v/maxCell;
+    if (r > 0.75) return {bg:'#1d4ed8',fg:'#fff'};
+    if (r > 0.5)  return {bg:'#3b82f6',fg:'#fff'};
+    if (r > 0.25) return {bg:'#93c5fd',fg:'#1e3a5f'};
+    return {bg:'#dbeafe',fg:'#1e3a5f'};
+  }
+
+  function fmtDia(str) {
+    const p = str.split('/');
+    if (p.length < 3) return str;
+    try {
+      const d = new Date(p[2], parseInt(p[1],10)-1, parseInt(p[0],10));
+      return diasSemana[d.getDay()] + ' ' + p[0]+'/'+p[1];
+    } catch { return str; }
+  }
+
+  const thCols = horasOrden.map(h => `<th>${h}h</th>`).join('');
+  const rows = fechasOrdenadas.map(f => {
+    const cells = horasOrden.map(h => {
+      const v = porFechaHora[f][h] || 0;
+      const c = cellColor(v);
+      return `<td style="padding:2px;"><div class="hcell" style="background:${c.bg};color:${c.fg};">${v>0?v:''}</div></td>`;
+    }).join('');
+    return `<tr><td class="day-lbl">${fmtDia(f)}</td>${cells}</tr>`;
+  }).join('');
+
+  // TOTALES POR HORA
+  const totalsPorHora = {};
+  horasOrden.forEach(h => {
+    totalsPorHora[h] = fechasOrdenadas.reduce((s,f) => s + (porFechaHora[f][h]||0), 0);
+  });
+  const maxTotal = Math.max(...Object.values(totalsPorHora));
+  const totalCells = horasOrden.map(h => {
+    const v = totalsPorHora[h];
+    if (!v) return `<td class="total-cell"><div class="hcell-total" style="background:#f3f4f6;color:#ccc;">0</div></td>`;
+    const r = v/maxTotal;
+    let bg, fg;
+    if (r > 0.75)     { bg='#1d4ed8'; fg='#fff'; }
+    else if (r > 0.5) { bg='#3b82f6'; fg='#fff'; }
+    else if (r > 0.25){ bg='#93c5fd'; fg='#1e3a5f'; }
+    else              { bg='#dbeafe'; fg='#1e3a5f'; }
+    // Destacar la hora pico global
+    const esPicoGlobal = v === maxTotal;
+    const border = esPicoGlobal ? 'outline:2px solid #1a56db;outline-offset:-2px;' : '';
+    return `<td class="total-cell"><div class="hcell-total" style="background:${bg};color:${fg};${border}">${v}</div></td>`;
+  }).join('');
+
+  document.getElementById('metaHeatmap').textContent = fechasOrdenadas.length + ' días · tickets por hora';
+  document.getElementById('hmapBody').innerHTML = `
+    <table class="hmap-table">
+      <thead><tr><th></th>${thCols}</tr></thead>
+      <tbody>
+        ${rows}
+        <tr>
+          <td class="total-lbl">TOTAL</td>
+          ${totalCells}
+        </tr>
+      </tbody>
+    </table>
+    <div class="hmap-legend">
+      <span><span class="hldot" style="background:#f3f4f6;border:1px solid #e5e7eb;"></span>0</span>
+      <span><span class="hldot" style="background:#dbeafe;"></span>1–2</span>
+      <span><span class="hldot" style="background:#93c5fd;"></span>3–5</span>
+      <span><span class="hldot" style="background:#3b82f6;"></span>6–8</span>
+      <span><span class="hldot" style="background:#1d4ed8;"></span>9+</span>
+      <span style="margin-left:8px;"><span class="hldot" style="background:#1d4ed8;outline:2px solid #1a56db;outline-offset:-2px;"></span>Hora pico semana</span>
+    </div>
+  `;
+
+  // 6. CURVA DIARIA (SVG)
+  const ventasPorDia = {};
+  horario.forEach(t => {
+    if (!t.fecha) return;
+    ventasPorDia[t.fecha] = (ventasPorDia[t.fecha]||0) + (t.monto||0);
+  });
+  const dias = Object.entries(ventasPorDia).sort((a,b)=>{
+    const [da,ma,ya]=a[0].split('/'); const [db,mb,yb]=b[0].split('/');
+    return new Date(ya,ma-1,da)-new Date(yb,mb-1,db);
+  });
+  document.getElementById('metaCurva').textContent = dias.length + ' días';
+  
+  if (dias.length >= 2) {
+    const W=820, H=200, PAD={top:16,right:16,bottom:40,left:72};
+    const iW=W-PAD.left-PAD.right, iH=H-PAD.top-PAD.bottom;
+    const maxV = Math.max(...dias.map(d=>d[1]));
+    const minV = 0;
+    const xStep = dias.length > 1 ? iW/(dias.length-1) : iW;
+    const yScale = v => iH - ((v-minV)/(maxV-minV||1))*iH;
+    
+    const pts = dias.map((d,i) => [PAD.left + i*xStep, PAD.top + yScale(d[1])]);
+    const pathD = pts.map((p,i)=>i===0?`M${p[0]},${p[1]}`:`L${p[0]},${p[1]}`).join(' ');
+    const areaD = `${pathD} L${pts[pts.length-1][0]},${PAD.top+iH} L${pts[0][0]},${PAD.top+iH} Z`;
+
+    const yTicks = 4;
+    const yLines = Array.from({length:yTicks+1},(_,i)=>{
+      const v = minV + (maxV-minV)*i/yTicks;
+      const y = PAD.top + yScale(v);
+      return `<line x1="${PAD.left}" y1="${y}" x2="${PAD.left+iW}" y2="${y}" stroke="#f0f0f0" stroke-width="1"/>
+              <text x="${PAD.left-8}" y="${y+4}" text-anchor="end" font-size="9" fill="#aaa" font-family="Courier New">${fmt(Math.round(v))}</text>`;
+    }).join('');
+
+    const xLabels = dias.map((d,i) => {
+      const x = PAD.left + i*xStep;
+      const p = d[0].split('/');
+      const lbl = p.length>=2 ? p[0]+'/'+p[1] : d[0];
+      return `<text x="${x}" y="${H-8}" text-anchor="middle" font-size="9" fill="#aaa" font-family="Courier New">${lbl}</text>`;
+    }).join('');
+
+    const dots = pts.map((p,i) => {
+      const esMejor = dias[i][1] === maxV;
+      return `<circle cx="${p[0]}" cy="${p[1]}" r="${esMejor?5:3}" fill="${esMejor?'#1a56db':'#60a5fa'}" stroke="#fff" stroke-width="1.5"/>`;
+    }).join('');
+
+    document.getElementById('curvaBody').innerHTML = `
+      <svg viewBox="0 0 ${W} ${H}" style="width:100%;overflow:visible;">
+        ${yLines}
+        <defs>
+          <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.18"/>
+            <stop offset="100%" stop-color="#3b82f6" stop-opacity="0.02"/>
+          </linearGradient>
+        </defs>
+        <path d="${areaD}" fill="url(#areaGrad)"/>
+        <path d="${pathD}" fill="none" stroke="#1a56db" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+        ${dots}
+        ${xLabels}
+      </svg>`;
+  } else {
+    document.getElementById('curvaBody').innerHTML = '<div style="padding:24px;text-align:center;color:#aaa;font-size:12px;">Carga al menos 2 días para ver la curva</div>';
+  }
+
+  document.getElementById('results').style.display = 'block';
+  document.getElementById('results').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function togglePanel(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+
+// ── DESCARGA DE GRÁFICOS ───────────────────────────────────────────────────
+async function descargarPanel(panelId, filename) {
+  // Asegurarse de que el panel esté abierto
+  const panel = document.getElementById(panelId);
+  const wasOpen = panel.classList.contains('open');
+  if (!wasOpen) panel.classList.add('open');
+
+  const body = panel.querySelector('.panel-body');
+
+  try {
+    // Usar html2canvas via CDN
+    if (!window.html2canvas) {
+      await loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js');
+    }
+    const canvas = await html2canvas(body, {
+      backgroundColor: '#ffffff',
+      scale: 2,
+      useCORS: true,
+      logging: false
+    });
+    const link = document.createElement('a');
+    link.download = filename + '.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  } catch(e) {
+    alert('Error al generar imagen: ' + e.message);
+  }
+
+  if (!wasOpen) panel.classList.remove('open');
+}
+
+function loadScript(src) {
+  return new Promise((res, rej) => {
+    const s = document.createElement('script');
+    s.src = src; s.onload = res; s.onerror = rej;
+    document.head.appendChild(s);
+  });
+}
+</script>
+</body>
+</html>
