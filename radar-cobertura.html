@@ -567,16 +567,10 @@ function renderResults(horario) {
   const maxTotal = Math.max(...Object.values(totalsPorHora));
   const totalCells = horasOrden.map(h => {
     const v = totalsPorHora[h];
-    if (!v) return `<td class="total-cell"><div class="hcell-total" style="background:#1e293b;color:#475569;">0</div></td>`;
-    const r = v/maxTotal;
-    let bg, fg;
-    if (r > 0.75)     { bg='#0e7490'; fg='#fff'; }
-    else if (r > 0.5) { bg='#0891b2'; fg='#fff'; }
-    else if (r > 0.25){ bg='#67e8f9'; fg='#164e63'; }
-    else              { bg='#cffafe'; fg='#164e63'; }
-    const esPicoGlobal = v === maxTotal;
-    const border = esPicoGlobal ? 'outline:2px solid #0e7490;outline-offset:-2px;' : '';
-    return `<td class="total-cell"><div class="hcell-total" style="background:${bg};color:${fg};${border}">${v}</div></td>`;
+    const esPico = v === maxTotal;
+    const txtColor = v ? '#fff' : 'rgba(255,255,255,.2)';
+    const acento = esPico ? 'border-left:3px solid #0ea5e9;' : '';
+    return `<td class="total-cell"><div class="hcell-total" style="background:#0f172a;color:${txtColor};${acento}">${v}</div></td>`;
   }).join('');
 
   document.getElementById('metaHeatmap').textContent = fechasOrdenadas.length + ' días · tickets por hora';
