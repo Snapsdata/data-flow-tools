@@ -244,7 +244,7 @@ body { font-family: -apple-system, 'Helvetica Neue', Arial, sans-serif; font-siz
       <img src="https://www.snapsmx.com/web/image/website/1/logo/SNAPS?unique=6e53ede" alt="SNAPS"
            onerror="this.style.display='none';document.getElementById('logoFallback').style.display='block'">
       <span class="logo-fallback" id="logoFallback" style="display:none">SNAPS</span>
-      <span class="header-sub">Reporte Semanal · v1.7</span>
+      <span class="header-sub">Reporte Semanal · v1.8</span>
     </div>
     <div class="header-right">
       <div class="period-tag" id="periodTag">Sin procesar</div>
@@ -354,6 +354,8 @@ body { font-family: -apple-system, 'Helvetica Neue', Arial, sans-serif; font-siz
         <div id="marcasBody" style="padding:14px 18px;"></div>
       </div>
     </div>
+
+    <div class="cpanel" id="cpCopy">
       <div class="cpanel-head" onclick="toggleCP('cpCopy')">
         <div class="cpanel-head-left">
           <span class="cpanel-title">Copiar para pegar en hoja</span>
@@ -666,8 +668,8 @@ async function processOne(fd){
       if(row[10]&&String(row[10]).trim().toUpperCase()==='GORRAS'&&row[22]){
         const qty=Number(row[22])||0;
         gorras+=qty;
-        // col[9] = marca, col[22] = cantidad vendida
-        const marca=row[9]?String(row[9]).trim():'SIN MARCA';
+        // col Q = índice 16 = marca/categoría, col W = índice 22 = cantidad
+        const marca=row[16]?String(row[16]).trim():'SIN MARCA';
         if(marca) marcas[marca]=(marcas[marca]||0)+qty;
       }
     }
