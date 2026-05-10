@@ -7,97 +7,49 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-body {
-  font-family: -apple-system, 'Helvetica Neue', Arial, sans-serif;
-  font-size: 14px;
-  background: #f5f5f5;
-  color: #111;
-  min-height: 100vh;
-}
-
-.shell {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 40px 24px 80px;
-}
-
-/* ── HEADER ── */
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-bottom: 20px;
-  border-bottom: 2px solid #111;
-  margin-bottom: 32px;
-}
-
+body { font-family: -apple-system, 'Helvetica Neue', Arial, sans-serif; font-size: 14px; background: #f5f5f5; color: #111; min-height: 100vh; }
+.shell { max-width: 900px; margin: 0 auto; padding: 40px 24px 80px; }
+.header { display: flex; align-items: center; justify-content: space-between; padding-bottom: 20px; border-bottom: 2px solid #111; margin-bottom: 32px; }
 .logo { display: flex; align-items: center; gap: 14px; }
 .logo img { height: 32px; width: auto; }
 .logo-fallback { font-size: 20px; font-weight: 800; letter-spacing: 4px; color: #111; text-transform: uppercase; }
 .header-sub { font-size: 11px; color: #888; letter-spacing: 1px; text-transform: uppercase; }
-.period-tag { font-size: 11px; color: #888; background: #fff; border: 1px solid #ddd; border-radius: 4px; padding: 5px 12px; letter-spacing: 0.5px; }
-
-/* ── CARDS ── */
+.period-tag { font-size: 11px; color: #888; background: #fff; border: 1px solid #ddd; border-radius: 4px; padding: 5px 12px; }
 .card { background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; margin-bottom: 12px; overflow: hidden; }
 .card-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; border-bottom: 1px solid #e0e0e0; }
 .card-title { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #444; }
 .card-body { padding: 20px; }
-
-/* ── DROP ZONE ── */
-.drop {
-  border: 2px dashed #ccc;
-  border-radius: 6px;
-  padding: 40px 20px;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.15s;
-  background: #fafafa;
-  position: relative;
-}
+.drop { border: 2px dashed #ccc; border-radius: 6px; padding: 40px 20px; text-align: center; cursor: pointer; transition: all 0.15s; background: #fafafa; position: relative; }
 .drop:hover, .drop.over { border-color: #111; background: #f0f0f0; }
 .drop input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
 .drop h3 { font-size: 15px; font-weight: 700; margin-bottom: 5px; }
 .drop p  { font-size: 12px; color: #888; }
-
-/* ── PROGRESS ── */
 .prog-wrap { display: none; margin-top: 16px; }
 .prog-wrap.on { display: block; }
 .prog-labels { display: flex; justify-content: space-between; font-size: 11px; color: #888; margin-bottom: 5px; }
 .prog-bg { height: 4px; background: #e0e0e0; border-radius: 99px; overflow: hidden; }
 .prog-fill { height: 100%; background: #111; border-radius: 99px; width: 0%; transition: width 0.2s; }
-
-/* ── FILE CHIPS ── */
-.file-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-  gap: 6px;
-  margin-top: 14px;
-}
-.chip { display: flex; align-items: center; gap: 8px; padding: 6px 10px; background: #fafafa; border: 1px solid #e0e0e0; border-radius: 5px; font-size: 11px; color: #444; transition: all 0.1s; }
-.chip.ok   { border-color: #111; background: #f0f0f0; color: #111; }
-.chip.err  { border-color: #cc3333; background: #fff5f5; color: #cc3333; }
-.chip.proc { border-color: #aaa; background: #fafafa; color: #888; }
+.file-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 6px; margin-top: 14px; }
+.chip { display: flex; align-items: center; gap: 8px; padding: 6px 10px; background: #fafafa; border: 1px solid #e0e0e0; border-radius: 5px; font-size: 11px; color: #444; }
+.chip.ok  { border-color: #111; background: #f0f0f0; }
+.chip.err { border-color: #cc3333; background: #fff5f5; color: #cc3333; }
+.chip.proc { color: #888; }
 .chip-dot { width: 6px; height: 6px; border-radius: 50%; background: #ccc; flex-shrink: 0; }
-.chip.ok   .chip-dot { background: #111; }
-.chip.err  .chip-dot { background: #cc3333; }
-.chip.proc .chip-dot { background: #aaa; animation: blink .7s ease-in-out infinite; }
+.chip.ok  .chip-dot { background: #111; }
+.chip.err .chip-dot { background: #cc3333; }
+.chip.proc .chip-dot { animation: blink .7s infinite; }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.2} }
 .chip-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.chip-rm { background: none; border: none; color: #bbb; cursor: pointer; font-size: 13px; padding: 0; flex-shrink: 0; transition: color .1s; }
+.chip-rm { background: none; border: none; color: #bbb; cursor: pointer; font-size: 13px; padding: 0; flex-shrink: 0; }
 .chip-rm:hover { color: #cc3333; }
-
-/* ── ACTIONS ── */
 .actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; }
 .btn { font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.5px; padding: 9px 20px; border-radius: 5px; cursor: pointer; border: none; transition: all 0.12s; }
-.btn-dark  { background: #111; color: #fff; }
+.btn-dark { background: #111; color: #fff; }
 .btn-dark:hover:not(:disabled) { background: #333; }
-.btn-line  { background: #fff; color: #444; border: 1px solid #ccc; }
+.btn-line { background: #fff; color: #444; border: 1px solid #ccc; }
 .btn-line:hover:not(:disabled) { border-color: #111; color: #111; }
 .btn:disabled { opacity: .3; cursor: not-allowed; }
 .count-tag { margin-left: auto; font-size: 11px; color: #888; background: #fff; border: 1px solid #e0e0e0; border-radius: 4px; padding: 5px 12px; }
-
-/* ── BANNERS ── */
 .banner { border-radius: 6px; padding: 12px 16px; margin-bottom: 12px; font-size: 12px; display: none; }
 .banner.on { display: block; }
 .banner strong { font-weight: 700; display: block; margin-bottom: 4px; font-size: 11px; letter-spacing: 0.5px; text-transform: uppercase; }
@@ -107,16 +59,14 @@ body {
 .banner ul { list-style: none; }
 .banner ul li { padding: 3px 0; border-bottom: 1px solid rgba(0,0,0,.06); font-size: 12px; }
 .banner ul li:last-child { border: none; }
-
-/* ── DUP MODAL ── */
 .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: none; align-items: center; justify-content: center; z-index: 999; }
 .modal-overlay.on { display: flex; }
-.modal { background: #fff; border-radius: 8px; padding: 28px 28px 24px; max-width: 480px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,.2); }
+.modal { background: #fff; border-radius: 8px; padding: 28px 28px 24px; max-width: 500px; width: 92%; box-shadow: 0 20px 60px rgba(0,0,0,.2); }
 .modal h3 { font-size: 15px; font-weight: 800; margin-bottom: 6px; }
 .modal p  { font-size: 12px; color: #666; margin-bottom: 18px; line-height: 1.5; }
 .dup-options { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
 .dup-option { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 1px solid #e0e0e0; border-radius: 6px; cursor: pointer; transition: all 0.12s; }
-.dup-option:hover { border-color: #111; background: #fafafa; }
+.dup-option:hover { border-color: #111; }
 .dup-option.selected { border-color: #111; background: #111; color: #fff; }
 .dup-option-num { width: 22px; height: 22px; border-radius: 50%; background: #e0e0e0; color: #444; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .dup-option.selected .dup-option-num { background: #fff; color: #111; }
@@ -125,17 +75,13 @@ body {
 .dup-option-file { font-size: 11px; color: #888; margin-top: 1px; font-family: monospace; }
 .dup-option.selected .dup-option-file { color: #bbb; }
 .modal-actions { display: flex; gap: 8px; justify-content: flex-end; }
-
-/* ── STATS ── */
 .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 12px; }
 .stat { background: #fff; border: 1px solid #e0e0e0; border-radius: 6px; padding: 16px 18px; }
 .stat-label { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #888; margin-bottom: 6px; }
 .stat-value { font-size: 28px; font-weight: 800; color: #111; line-height: 1; }
-.stat.dark   { background: #111; border-color: #111; }
+.stat.dark { background: #111; border-color: #111; }
 .stat.dark .stat-label { color: rgba(255,255,255,.45); }
 .stat.dark .stat-value { color: #fff; }
-
-/* ── COLLAPSE PANEL ── */
 .cpanel { background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; margin-bottom: 10px; overflow: hidden; }
 .cpanel-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; cursor: pointer; user-select: none; transition: background .1s; }
 .cpanel-head:hover { background: #fafafa; }
@@ -146,157 +92,86 @@ body {
 .cpanel.open .cpanel-arrow { transform: rotate(180deg); }
 .cpanel-body { display: none; border-top: 1px solid #e0e0e0; }
 .cpanel.open .cpanel-body { display: block; }
-
-/* ── TABLE ── */
 .rtable { width: 100%; border-collapse: collapse; font-size: 13px; }
 .rtable thead tr { background: #fafafa; border-bottom: 2px solid #e0e0e0; }
 .rtable th { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #888; padding: 10px 18px; text-align: left; }
 .rtable th:last-child { text-align: right; }
 .rtable td { padding: 9px 18px; border-bottom: 1px solid #f0f0f0; color: #111; }
-.rtable td.td-pre { font-family: 'Courier New', monospace; font-size: 11px; color: #888; }
+.rtable td.td-pre  { font-family: monospace; font-size: 11px; color: #888; }
 .rtable td.td-name { font-weight: 600; }
-.rtable td.td-val { text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; }
+.rtable td.td-val  { text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; }
 .rtable tbody tr:last-child td { border-bottom: none; }
 .rtable tbody tr:hover td { background: #fafafa; }
-
-/* ── SPLIT COPY PANEL ── */
-.split-panel {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  background: #fff;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  overflow: hidden;
-}
-.split-left {
-  border-right: 1px solid #e0e0e0;
-  overflow: hidden;
-}
-.split-right {
-  overflow: hidden;
-}
-.split-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 14px;
-  background: #fafafa;
-  border-bottom: 1px solid #e0e0e0;
-}
+.split-panel { display: grid; grid-template-columns: 1fr 1fr; }
+.split-left  { border-right: 1px solid #e0e0e0; }
+.split-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: #fafafa; border-bottom: 1px solid #e0e0e0; }
 .split-header span { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #888; }
-.split-list {
-  font-size: 12px;
-  line-height: 2;
-  padding: 12px 14px;
-  color: #444;
-  font-family: 'Courier New', monospace;
-  white-space: pre;
-  overflow-x: auto;
-  max-height: 440px;
-  overflow-y: auto;
-}
-.qty-list {
-  font-size: 12px;
-  line-height: 2;
-  padding: 12px 14px;
-  color: #111;
-  font-weight: 700;
-  font-family: 'Courier New', monospace;
-  white-space: pre;
-  overflow-x: auto;
-  max-height: 440px;
-  overflow-y: auto;
-  user-select: all;
-  background: #111;
-  color: rgba(255,255,255,.8);
-}
-.btn-copy { font-family: monospace; font-size: 11px; background: rgba(255,255,255,.12); color: #aaa; border: 1px solid rgba(255,255,255,.18); border-radius: 4px; padding: 4px 12px; cursor: pointer; transition: all .12s; }
+.split-list { font-size: 12px; line-height: 2; padding: 12px 14px; color: #444; font-family: monospace; white-space: pre; }
+.qty-list   { font-size: 12px; line-height: 2; padding: 12px 14px; font-weight: 700; font-family: monospace; white-space: pre; user-select: all; background: #111; color: rgba(255,255,255,.85); }
+.btn-copy { font-family: monospace; font-size: 11px; background: rgba(255,255,255,.1); color: #aaa; border: 1px solid rgba(255,255,255,.15); border-radius: 4px; padding: 4px 12px; cursor: pointer; }
 .btn-copy:hover { background: rgba(255,255,255,.2); color: #fff; }
-.btn-copy-light { font-family: monospace; font-size: 11px; background: #fff; color: #444; border: 1px solid #ccc; border-radius: 4px; padding: 4px 12px; cursor: pointer; transition: all .12s; }
+.btn-copy-light { font-family: monospace; font-size: 11px; background: #fff; color: #444; border: 1px solid #ccc; border-radius: 4px; padding: 4px 12px; cursor: pointer; }
 .btn-copy-light:hover { border-color: #111; color: #111; }
-
-/* ── CONFIGURACIÓN PANEL ── */
-.config-section {
-  background: #fff;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  margin-bottom: 12px;
-  overflow: hidden;
-}
-.config-head {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 14px 20px; cursor: pointer; user-select: none; transition: background .1s;
-}
+.config-section { background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; margin-bottom: 12px; overflow: hidden; }
+.config-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; cursor: pointer; user-select: none; transition: background .1s; }
 .config-head:hover { background: #fafafa; }
 .config-body { display: none; border-top: 1px solid #e0e0e0; }
 .config-body.on { display: block; }
-
-/* Drag & drop orden */
-.orden-list {
-  padding: 14px 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  max-height: 480px;
-  overflow-y: auto;
-}
-.orden-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 9px 12px;
-  background: #fafafa;
-  border: 1px solid #e0e0e0;
-  border-radius: 6px;
-  cursor: grab;
-  user-select: none;
-  transition: background .1s, box-shadow .1s;
-  font-size: 13px;
-}
+.cfg-tabs { display: flex; border-bottom: 1px solid #e0e0e0; background: #fafafa; }
+.cfg-tab { padding: 10px 22px; font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #888; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all .12s; }
+.cfg-tab.active { color: #111; border-bottom-color: #111; background: #fff; }
+.cfg-tab-body { display: none; }
+.cfg-tab-body.active { display: block; }
+.orden-list { padding: 12px 20px; display: flex; flex-direction: column; gap: 4px; max-height: 420px; overflow-y: auto; }
+.orden-item { display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: #fafafa; border: 1px solid #e0e0e0; border-radius: 6px; cursor: grab; user-select: none; transition: background .1s; }
 .orden-item:hover { background: #f0f0f0; }
-.orden-item.dragging { opacity: .4; box-shadow: 0 4px 16px rgba(0,0,0,.15); cursor: grabbing; }
+.orden-item.dragging  { opacity: .35; cursor: grabbing; }
 .orden-item.drag-over { border-color: #111; background: #eee; }
-.orden-handle { color: #bbb; font-size: 14px; cursor: grab; flex-shrink: 0; }
-.orden-num  { font-size: 10px; color: #aaa; min-width: 20px; text-align: right; }
-.orden-pre  { font-family: monospace; font-size: 11px; color: #888; min-width: 56px; font-weight: 700; }
+.orden-handle { color: #ccc; font-size: 15px; flex-shrink: 0; }
+.orden-num  { font-size: 10px; color: #bbb; min-width: 18px; text-align: right; }
+.orden-pre  { font-family: monospace; font-size: 11px; color: #888; font-weight: 700; min-width: 58px; }
 .orden-name { font-size: 12px; font-weight: 600; flex: 1; }
-.btn-del { background: none; border: none; color: #ccc; cursor: pointer; font-size: 14px; padding: 0; transition: color .1s; }
+.orden-aliases { font-size: 10px; color: #bbb; font-family: monospace; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.btn-del { background: none; border: none; color: #ddd; cursor: pointer; font-size: 15px; padding: 0; transition: color .1s; flex-shrink: 0; }
 .btn-del:hover { color: #cc3333; }
-
-/* Add form */
+.alias-list { padding: 12px 20px; display: flex; flex-direction: column; gap: 6px; max-height: 420px; overflow-y: auto; }
+.alias-row { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: #fafafa; border: 1px solid #e0e0e0; border-radius: 6px; flex-wrap: wrap; gap: 8px; }
+.alias-row-left { display: flex; flex-direction: column; min-width: 72px; }
+.alias-row-pre  { font-family: monospace; font-size: 12px; font-weight: 700; color: #111; }
+.alias-row-name { font-size: 10px; color: #aaa; margin-top: 2px; }
+.alias-tags { display: flex; flex-wrap: wrap; gap: 4px; flex: 1; }
+.alias-tag { display: inline-flex; align-items: center; gap: 3px; background: #333; color: #fff; font-family: monospace; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 3px; }
+.alias-tag.is-main { background: #888; }
+.alias-tag-rm { background: none; border: none; color: rgba(255,255,255,.4); cursor: pointer; font-size: 12px; padding: 0; line-height: 1; }
+.alias-tag-rm:hover { color: #ff8888; }
+.alias-add-form { display: flex; gap: 6px; align-items: center; }
+.alias-input { font-family: monospace; font-size: 12px; background: #fff; border: 1px solid #ddd; border-radius: 4px; padding: 4px 8px; width: 110px; text-transform: uppercase; outline: none; }
+.alias-input:focus { border-color: #111; }
+.btn-sm { font-size: 11px; font-weight: 700; background: #111; color: #fff; border: none; border-radius: 4px; padding: 5px 10px; cursor: pointer; font-family: inherit; }
+.btn-sm:hover { background: #333; }
 .add-form { display: flex; gap: 8px; flex-wrap: wrap; padding: 14px 20px; background: #fafafa; border-top: 1px solid #e0e0e0; }
-.add-form input { background: #fff; border: 1px solid #ddd; border-radius: 5px; color: #111; font-family: inherit; font-size: 13px; padding: 8px 12px; outline: none; transition: border-color .12s; }
+.add-form input { background: #fff; border: 1px solid #ddd; border-radius: 5px; color: #111; font-family: inherit; font-size: 13px; padding: 8px 12px; outline: none; }
 .add-form input:focus { border-color: #111; }
 .add-form input::placeholder { color: #bbb; }
 .add-form .in-pre  { width: 100px; text-transform: uppercase; font-family: monospace; }
 .add-form .in-name { flex: 1; min-width: 200px; }
-
-/* ── DRIVE SECTION ── */
 .drive-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-.drive-input { flex: 1; min-width: 220px; font-family: inherit; font-size: 13px; background: #fff; border: 1px solid #ddd; border-radius: 5px; color: #111; padding: 9px 12px; outline: none; transition: border-color .12s; }
+.drive-input { flex: 1; min-width: 220px; font-family: inherit; font-size: 13px; background: #fff; border: 1px solid #ddd; border-radius: 5px; color: #111; padding: 9px 12px; outline: none; }
 .drive-input:focus { border-color: #111; }
 .drive-input::placeholder { color: #bbb; }
 .drive-status { font-size: 11px; color: #888; font-style: italic; margin-top: 6px; min-height: 16px; }
 .drive-status.ok  { color: #2a7a4a; font-style: normal; font-weight: 600; }
 .drive-status.err { color: #cc3333; font-style: normal; }
-
-/* ── TOAST ── */
-.toast { position: fixed; bottom: 24px; right: 24px; background: #111; color: #fff; font-size: 12px; font-weight: 600; letter-spacing: 0.5px; padding: 10px 18px; border-radius: 6px; box-shadow: 0 8px 32px rgba(0,0,0,.2); opacity: 0; transform: translateY(8px); transition: all .22s ease; pointer-events: none; z-index: 9999; }
+.toast { position: fixed; bottom: 24px; right: 24px; background: #111; color: #fff; font-size: 12px; font-weight: 600; padding: 10px 18px; border-radius: 6px; box-shadow: 0 8px 32px rgba(0,0,0,.2); opacity: 0; transform: translateY(8px); transition: all .22s ease; pointer-events: none; z-index: 9999; }
 .toast.on { opacity: 1; transform: translateY(0); }
-
-/* scrollbar */
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 99px; }
-
 @media(max-width:600px){ .stats{ grid-template-columns:1fr; } .split-panel{ grid-template-columns:1fr; } }
 </style>
 </head>
 <body>
-
 <div class="shell">
 
-  <!-- HEADER -->
   <div class="header">
     <div class="logo">
       <img src="https://www.snapsmx.com/web/image/website/1/logo/SNAPS?unique=6e53ede" alt="SNAPS"
@@ -304,12 +179,11 @@ body {
       <span class="logo-fallback" id="logoFallback" style="display:none">SNAPS</span>
     </div>
     <div style="text-align:right">
-      <div class="header-sub">Reporte Semanal · Gorras <span style="color:#ccc;margin-left:6px">v1.5</span></div>
+      <div class="header-sub">Reporte Semanal · Gorras <span style="color:#ccc;margin-left:6px">v1.6</span></div>
       <div class="period-tag" id="periodTag" style="margin-top:5px">Sin procesar</div>
     </div>
   </div>
 
-  <!-- GOOGLE DRIVE -->
   <div class="card">
     <div class="card-head">
       <span class="card-title">Cargar desde Google Drive</span>
@@ -324,7 +198,6 @@ body {
     </div>
   </div>
 
-  <!-- UPLOAD -->
   <div class="card">
     <div class="card-head">
       <span class="card-title">Cargar Reportes</span>
@@ -337,75 +210,60 @@ body {
         <p>Acepta todos los archivos .xlsx a la vez · sin límite</p>
       </div>
       <div class="prog-wrap" id="progWrap">
-        <div class="prog-labels">
-          <span id="progLabel">Procesando...</span>
-          <span id="progPct">0%</span>
-        </div>
+        <div class="prog-labels"><span id="progLabel">Procesando...</span><span id="progPct">0%</span></div>
         <div class="prog-bg"><div class="prog-fill" id="progFill"></div></div>
       </div>
       <div class="file-grid" id="fileGrid"></div>
     </div>
   </div>
 
-  <!-- ACTIONS -->
   <div class="actions">
     <button class="btn btn-dark" id="btnProcess" disabled>Procesar Reportes</button>
     <button class="btn btn-line" id="btnClear">Limpiar</button>
     <div class="count-tag" id="countTag">0 archivos</div>
   </div>
 
-  <!-- CONFIGURACIÓN TIENDAS Y ORDEN -->
   <div class="config-section">
     <div class="config-head" id="configToggle">
-      <span class="card-title" style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#444">⚙️ Configuración de Tiendas y Orden</span>
-      <span style="font-size:11px;color:#888">Ver / Editar ▾</span>
+      <span class="card-title" style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#444">⚙️ Configuración de Tiendas</span>
+      <span id="configArrow" style="font-size:11px;color:#888">Ver / Editar ▾</span>
     </div>
     <div class="config-body" id="configBody">
-      <div style="padding:12px 20px;background:#fffbe6;border-bottom:1px solid #e0e0e0;font-size:11px;color:#6b5a00;">
-        💡 Arrastra las filas para cambiar el orden. Este orden se usará al mostrar los resultados y para copiar las cantidades.
+      <div class="cfg-tabs">
+        <div class="cfg-tab active" data-tab="orden">Orden y Tiendas</div>
+        <div class="cfg-tab" data-tab="alias">Editor de Prefijos / Alias</div>
       </div>
-      <div class="orden-list" id="ordenList"></div>
-      <div class="add-form">
-        <input type="text" id="inPre"  class="in-pre"  placeholder="PREFIJO" maxlength="10">
-        <input type="text" id="inName" class="in-name" placeholder="Nombre del punto de venta">
-        <button class="btn btn-dark" id="btnAdd" style="padding:8px 16px;font-size:11px">+ Agregar Tienda</button>
+      <div class="cfg-tab-body active" id="tab-orden">
+        <div style="padding:10px 20px;background:#fffbe6;border-bottom:1px solid #e0e0e0;font-size:11px;color:#6b5a00;">
+          💡 Arrastra ⠿ para reordenar. El orden aplica a los resultados y al panel de copia.
+        </div>
+        <div class="orden-list" id="ordenList"></div>
+        <div class="add-form">
+          <input type="text" id="inPre"  class="in-pre"  placeholder="PREFIJO" maxlength="10">
+          <input type="text" id="inName" class="in-name" placeholder="Nombre del punto de venta">
+          <button class="btn btn-dark" id="btnAdd" style="padding:8px 16px;font-size:11px">+ Agregar Tienda</button>
+        </div>
+      </div>
+      <div class="cfg-tab-body" id="tab-alias">
+        <div style="padding:10px 20px;background:#f0f4ff;border-bottom:1px solid #dde;font-size:11px;color:#334;">
+          🔡 Agrega variantes del prefijo. Si el archivo llega como <strong>Obl</strong>, <strong>OBLATOS</strong> o <strong>obl_gdl</strong>, todos se reconocen como la misma tienda. El alias principal (gris) no se puede borrar.
+        </div>
+        <div class="alias-list" id="aliasList"></div>
       </div>
     </div>
   </div>
 
-  <!-- RESULTS -->
   <div id="results" style="display:none">
+    <div class="banner banner-warn" id="warnBanner"><strong>Archivos no reconocidos — revisar prefijo</strong><ul id="warnList"></ul></div>
+    <div class="banner banner-dup"  id="dupBanner"><strong>Reportes duplicados detectados</strong><ul id="dupList"></ul></div>
+    <div class="banner banner-date" id="fechasBanner"><strong>Fechas incorrectas — no coinciden con el periodo mayoritario</strong><ul id="fechasList"></ul></div>
 
-    <div class="banner banner-warn" id="warnBanner">
-      <strong>Archivos con nombre incorrecto — revisar</strong>
-      <ul id="warnList"></ul>
-    </div>
-    <div class="banner banner-dup" id="dupBanner">
-      <strong>Reportes duplicados detectados</strong>
-      <ul id="dupList"></ul>
-    </div>
-    <div class="banner banner-date" id="fechasBanner">
-      <strong>Fechas incorrectas — estos reportes no coinciden con el periodo mayoritario</strong>
-      <ul id="fechasList"></ul>
-    </div>
-
-    <!-- STATS -->
     <div class="stats">
-      <div class="stat">
-        <div class="stat-label">Tiendas</div>
-        <div class="stat-value" id="statT">0</div>
-      </div>
-      <div class="stat dark">
-        <div class="stat-label">Total gorras</div>
-        <div class="stat-value" id="statG">0</div>
-      </div>
-      <div class="stat">
-        <div class="stat-label">Promedio</div>
-        <div class="stat-value" id="statA">0</div>
-      </div>
+      <div class="stat"><div class="stat-label">Tiendas</div><div class="stat-value" id="statT">0</div></div>
+      <div class="stat dark"><div class="stat-label">Total gorras</div><div class="stat-value" id="statG">0</div></div>
+      <div class="stat"><div class="stat-label">Promedio</div><div class="stat-value" id="statA">0</div></div>
     </div>
 
-    <!-- DESGLOSE -->
     <div class="cpanel" id="cpDesglose">
       <div class="cpanel-head" onclick="toggleCP('cpDesglose')">
         <div class="cpanel-head-left">
@@ -416,52 +274,43 @@ body {
       </div>
       <div class="cpanel-body">
         <table class="rtable">
-          <thead><tr><th>Prefijo</th><th>Tienda</th><th>Gorras</th></tr></thead>
+          <thead><tr><th>Token detectado</th><th>Tienda</th><th>Gorras</th></tr></thead>
           <tbody id="rtBody"></tbody>
         </table>
       </div>
     </div>
 
-    <!-- SPLIT COPY PANEL -->
     <div class="cpanel" id="cpCopy">
       <div class="cpanel-head" onclick="toggleCP('cpCopy')">
         <div class="cpanel-head-left">
           <span class="cpanel-title">Copiar para pegar en hoja</span>
-          <span class="cpanel-meta">Solo las cantidades · orden configurado</span>
+          <span class="cpanel-meta">Solo cantidades · orden configurado</span>
         </div>
         <span class="cpanel-arrow">▼</span>
       </div>
       <div class="cpanel-body">
         <div style="padding:10px 16px;background:#fafafa;border-bottom:1px solid #e0e0e0;font-size:11px;color:#888;">
-          El panel izquierdo muestra las tiendas en orden. <strong>El panel derecho (oscuro) contiene solo las cantidades</strong> — selecciona todo y copia, o usa el botón Copiar.
+          Izquierda = referencia. <strong>Derecha (negro) = solo cantidades, pega directo en tu columna.</strong>
         </div>
         <div class="split-panel">
           <div class="split-left">
-            <div class="split-header" style="background:#fafafa">
-              <span>Tiendas (referencia)</span>
-              <button class="btn-copy-light" id="btnCopyNombres">Copiar</button>
-            </div>
+            <div class="split-header"><span>Tiendas (referencia)</span><button class="btn-copy-light" id="btnCopyNombres">Copiar</button></div>
             <div class="split-list" id="nombresOut"></div>
           </div>
-          <div class="split-right" style="background:#111">
-            <div class="split-header" style="background:#1a1a1a;border-bottom-color:#333">
-              <span style="color:#666">Cantidades (pegar)</span>
-              <button class="btn-copy" id="btnCopyCantidades">Copiar</button>
-            </div>
+          <div style="background:#111">
+            <div class="split-header" style="background:#1a1a1a;border-bottom:1px solid #333"><span style="color:#555">Cantidades (pegar)</span><button class="btn-copy" id="btnCopyCantidades">Copiar</button></div>
             <div class="qty-list" id="cantidadesOut"></div>
           </div>
         </div>
       </div>
     </div>
-
   </div>
 </div>
 
-<!-- MODAL DUPLICADOS -->
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal">
     <h3 id="modalTitle">Reporte duplicado</h3>
-    <p id="modalDesc">Se encontraron dos archivos para la misma tienda. Selecciona cuál quieres usar:</p>
+    <p id="modalDesc"></p>
     <div class="dup-options" id="modalOptions"></div>
     <div class="modal-actions">
       <button class="btn btn-line" id="modalCancel">Cancelar</button>
@@ -469,32 +318,85 @@ body {
     </div>
   </div>
 </div>
-
 <div class="toast" id="toast"></div>
 
 <script>
-// ── TIENDAS & ORDEN ──────────────────────────────────────
+// ESTRUCTURA: cada tienda tiene prefijo principal + array de aliases
 let TIENDAS = {
-  'OBL':'OBLATOS','MOR':'MORELIA','TLA':'TLALNE','PCE':'PUEBLA CENTRO',
-  'ANA':'ANAHUAC','ESF':'ESFERA','CUM':'CUMBRES','LAP':'LA PERLA GDL',
-  'AME':'LAS AMERICAS','FOR':'FORUM CUERNA','ALTA':'ALTABRISA MERIDA',
-  'TPARK':'THE PARK SLP','ARA':'ARAGON','CDJ':'CIUDAD JARDIN',
-  'OCAN':'OUTLET CANCUN','COS':'COSMOPOL','SAG':'SAN AGUSTIN',
-  'REY':'SENDERO REYNOSA','LUNA':'LUNA PARC','PSL':'PLAZA SAN LUIS',
-  'ROS':'EL ROSARIO','TEP':'TEPIC','ZUM':'ZUMPANGO','GUA':'ALAÍA GTO',
-  'AMB':'AMBAR','OCE':'OCEANIA','PAT':'PATRIOTISMO',
+  'OBL':   { name:'OBLATOS',          aliases:['OBL','OBLATOS'] },
+  'MOR':   { name:'MORELIA',          aliases:['MOR','MORELIA'] },
+  'TLA':   { name:'TLALNE',           aliases:['TLA','TLALNE','TLAL'] },
+  'PCE':   { name:'PUEBLA CENTRO',    aliases:['PCE','PCN','PUEBLA','PUEBLACENTRO'] },
+  'ANA':   { name:'ANAHUAC',          aliases:['ANA','ANAHUAC'] },
+  'ESF':   { name:'ESFERA',           aliases:['ESF','ESFERA'] },
+  'CUM':   { name:'CUMBRES',          aliases:['CUM','CUMBRES'] },
+  'LAP':   { name:'LA PERLA GDL',     aliases:['LAP','LAPERLA','PERLA'] },
+  'AME':   { name:'LAS AMERICAS',     aliases:['AME','AMERICAS','LASAMERICAS'] },
+  'FOR':   { name:'FORUM CUERNA',     aliases:['FOR','FORUM','FCUERNA','FORUMCUERNA'] },
+  'ALTA':  { name:'ALTABRISA MERIDA', aliases:['ALTA','ALTABRISA','ALTAM'] },
+  'TPARK': { name:'THE PARK SLP',     aliases:['TPARK','THEPARK','PARK','SLP'] },
+  'ARA':   { name:'ARAGON',           aliases:['ARA','ARAGON'] },
+  'CDJ':   { name:'CIUDAD JARDIN',    aliases:['CDJ','CIUDADJARDIN','CJN'] },
+  'OCAN':  { name:'OUTLET CANCUN',    aliases:['OCAN','OUTLET','CANCUN','OCN'] },
+  'COS':   { name:'COSMOPOL',         aliases:['COS','COSMOPOL'] },
+  'SAG':   { name:'SAN AGUSTIN',      aliases:['SAG','SANAGUSTIN','SAGUSTIN'] },
+  'REY':   { name:'SENDERO REYNOSA',  aliases:['REY','REYNOSA','SENDERO'] },
+  'LUNA':  { name:'LUNA PARC',        aliases:['LUNA','LUNAPARC'] },
+  'PSL':   { name:'PLAZA SAN LUIS',   aliases:['PSL','PLAZASL','SANLUIS','PLAZASANLUIS'] },
+  'ROS':   { name:'EL ROSARIO',       aliases:['ROS','ROSARIO','ELROSARIO'] },
+  'TEP':   { name:'TEPIC',            aliases:['TEP','TEPIC'] },
+  'ZUM':   { name:'ZUMPANGO',         aliases:['ZUM','ZUMPANGO'] },
+  'ALAIA': { name:'ALAÏA GTO',        aliases:['ALAIA','GUA','GTO','GUANAJUATO','ALAIAGTO'] },
+  'AMB':   { name:'AMBAR',            aliases:['AMB','AMBAR','TUX','TUXTLA','AMBARTUXTLA'] },
+  'OCE':   { name:'OCEANIA',          aliases:['OCE','OCEANIA'] },
+  'PAT':   { name:'PATRIOTISMO',      aliases:['PAT','PATRIOTISMO'] },
 };
 
 let ORDEN = [
   'OBL','MOR','TLA','PCE','ANA','ESF','CUM','LAP',
   'AME','FOR','ALTA','TPARK','ARA','CDJ','OCAN','COS',
-  'SAG','REY','LUNA','PSL','ROS','TEP','ZUM','GUA','AMB','OCE','PAT'
+  'SAG','REY','LUNA','PSL','ROS','TEP','ZUM','ALAIA','AMB','OCE','PAT'
 ];
 
 let filesData = [];
 let lastFinalResults = [];
 
-// ── DOM REFS ─────────────────────────────────────────────
+// Normaliza cadena: mayúsculas, sin acentos, sin caracteres especiales
+function norm(s) {
+  return String(s).toUpperCase()
+    .replace(/[ÁÀÄÂ]/g,'A').replace(/[ÉÈËÊ]/g,'E')
+    .replace(/[ÍÌÏÎ]/g,'I').replace(/[ÓÒÖÔ]/g,'O')
+    .replace(/[ÚÙÜÛ]/g,'U').replace(/Ï/g,'I')
+    .replace(/[^A-Z0-9]/g,'');
+}
+
+// Construye mapa alias_normalizado → prefijo principal
+function buildAliasMap() {
+  const map = {};
+  for (const [pre, data] of Object.entries(TIENDAS)) {
+    map[norm(pre)] = pre;
+    data.aliases.forEach(a => { map[norm(a)] = pre; });
+  }
+  return map;
+}
+
+// Resuelve token del nombre de archivo → prefijo principal o null
+function resolvePrefix(rawToken) {
+  const clean = norm(rawToken);
+  const map = buildAliasMap();
+  if (map[clean]) return map[clean];
+  // Coincidencia parcial: alias contenido en token o viceversa
+  for (const [alias, pre] of Object.entries(map)) {
+    if (alias.length >= 3 && (clean.startsWith(alias) || alias.startsWith(clean))) return pre;
+  }
+  return null;
+}
+
+function getToken(filename) {
+  return filename.split(/[-_ .]/)[0];
+}
+
+// DOM refs
 const drop       = document.getElementById('drop');
 const fileInput  = document.getElementById('fileInput');
 const fileGrid   = document.getElementById('fileGrid');
@@ -509,15 +411,11 @@ const periodTag  = document.getElementById('periodTag');
 const resultsEl  = document.getElementById('results');
 const toast      = document.getElementById('toast');
 
-// ── DRAG & DROP ARCHIVOS ─────────────────────────────────
+// Archivos
 drop.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('over'); });
 drop.addEventListener('dragleave', () => drop.classList.remove('over'));
 drop.addEventListener('drop', e => { e.preventDefault(); drop.classList.remove('over'); addFiles([...e.dataTransfer.files]); });
 fileInput.addEventListener('change', () => { addFiles([...fileInput.files]); fileInput.value=''; });
-
-function getPrefix(filename) {
-  return filename.split(/[-_ ]/)[0].toUpperCase().trim();
-}
 
 function addFiles(newFiles) {
   newFiles.forEach(f => {
@@ -528,12 +426,10 @@ function addFiles(newFiles) {
   renderGrid(); updateCount();
   btnProcess.disabled = filesData.length === 0;
 }
-
 function updateCount() {
   const n = filesData.length;
   countTag.textContent = n + ' archivo' + (n!==1?'s':'');
 }
-
 function renderGrid() {
   fileGrid.innerHTML = '';
   filesData.forEach((fd, i) => {
@@ -545,424 +441,406 @@ function renderGrid() {
   fileGrid.querySelectorAll('.chip-rm').forEach(b => {
     b.addEventListener('click', e => {
       e.stopPropagation();
-      filesData.splice(+b.dataset.i, 1);
+      filesData.splice(+b.dataset.i,1);
       renderGrid(); updateCount();
-      btnProcess.disabled = filesData.length === 0;
+      btnProcess.disabled = filesData.length===0;
     });
   });
 }
 
-// ── CLEAR ────────────────────────────────────────────────
 btnClear.addEventListener('click', () => {
-  filesData = []; renderGrid(); updateCount();
-  btnProcess.disabled = true;
-  resultsEl.style.display = 'none';
-  periodTag.textContent = 'Sin procesar';
+  filesData=[]; renderGrid(); updateCount();
+  btnProcess.disabled=true;
+  resultsEl.style.display='none';
+  periodTag.textContent='Sin procesar';
   progWrap.classList.remove('on');
-  document.getElementById('warnBanner').classList.remove('on');
-  document.getElementById('dupBanner').classList.remove('on');
-  document.getElementById('fechasBanner').classList.remove('on');
+  ['warnBanner','dupBanner','fechasBanner'].forEach(id=>document.getElementById(id).classList.remove('on'));
 });
 
-// ── PROCESS ──────────────────────────────────────────────
+// PROCESS
 btnProcess.addEventListener('click', async () => {
   if (!filesData.length) return;
-  btnProcess.disabled = true;
-  filesData.forEach(fd => fd.status = 'processing');
+  btnProcess.disabled=true;
+  filesData.forEach(fd=>fd.status='processing');
   renderGrid();
   progWrap.classList.add('on');
   setProgress(0, filesData.length);
 
-  const BATCH = 6;
-  let rawResults = [];
-  let done = 0;
-  for (let i = 0; i < filesData.length; i += BATCH) {
-    const batch = filesData.slice(i, i + BATCH);
-    const bRes  = await Promise.all(batch.map(fd => processOne(fd)));
-    bRes.forEach((res, bi) => {
+  const BATCH=6; let rawResults=[]; let done=0;
+  for (let i=0; i<filesData.length; i+=BATCH) {
+    const batch=filesData.slice(i,i+BATCH);
+    const bRes=await Promise.all(batch.map(fd=>processOne(fd)));
+    bRes.forEach((res,bi)=>{
       rawResults.push(res);
-      filesData[i+bi].status = res.error ? 'error' : 'loaded';
-      done++;
-      setProgress(done, filesData.length);
+      filesData[i+bi].status=res.error?'error':'loaded';
+      done++; setProgress(done,filesData.length);
     });
     renderGrid();
   }
-
   progWrap.classList.remove('on');
-  btnProcess.disabled = false;
+  btnProcess.disabled=false;
 
-  // Periodo por frecuencia
-  const periodFreq = {};
-  rawResults.forEach(r => {
-    if (r.period) periodFreq[r.period] = (periodFreq[r.period] || 0) + 1;
-  });
-  let correctPeriod = '';
-  let maxCount = 0;
-  for (const [p, c] of Object.entries(periodFreq)) {
-    if (c > maxCount) { maxCount = c; correctPeriod = p; }
-  }
-  if (correctPeriod) periodTag.textContent = correctPeriod;
+  // Periodo
+  const pFreq={};
+  rawResults.forEach(r=>{if(r.period) pFreq[r.period]=(pFreq[r.period]||0)+1;});
+  let correctPeriod='',maxC=0;
+  for(const[p,c] of Object.entries(pFreq)){if(c>maxC){maxC=c;correctPeriod=p;}}
+  if(correctPeriod) periodTag.textContent=correctPeriod;
 
   // Fechas incorrectas
-  const fechasBanner  = document.getElementById('fechasBanner');
-  const fechasList    = document.getElementById('fechasList');
-  const wrongDate = rawResults.filter(r => !r.error && r.period && r.period !== correctPeriod);
-  if (wrongDate.length && correctPeriod) {
-    fechasList.innerHTML = wrongDate.map(r =>
-      `<li><strong>${getPrefix(r.archivo)} · ${r.tienda}</strong> — ${r.period||'sin fecha'} <span style="color:#aaa;margin-left:4px">(correcto: ${correctPeriod})</span></li>`
-    ).join('');
+  const wrongDate=rawResults.filter(r=>!r.error&&r.period&&r.period!==correctPeriod);
+  const fechasBanner=document.getElementById('fechasBanner');
+  const fechasList=document.getElementById('fechasList');
+  if(wrongDate.length&&correctPeriod){
+    fechasList.innerHTML=wrongDate.map(r=>`<li><strong>${r.token} → ${r.tienda}</strong> — ${r.period} <span style="color:#aaa">(correcto: ${correctPeriod})</span></li>`).join('');
     fechasBanner.classList.add('on');
-  } else {
-    fechasBanner.classList.remove('on');
-  }
+  } else { fechasBanner.classList.remove('on'); }
 
-  // Prefijos desconocidos
-  const warnBanner = document.getElementById('warnBanner');
-  const warnList   = document.getElementById('warnList');
-  const unknown = rawResults.filter(r => !r.error && !TIENDAS[getPrefix(r.archivo)]);
-  if (unknown.length) {
-    warnList.innerHTML = unknown.map(r => `<li>${r.archivo} — prefijo <strong>${getPrefix(r.archivo)}</strong> no reconocido</li>`).join('');
+  // No reconocidos
+  const warnBanner=document.getElementById('warnBanner');
+  const warnList=document.getElementById('warnList');
+  const unknown=rawResults.filter(r=>!r.error&&!r.pre);
+  if(unknown.length){
+    warnList.innerHTML=unknown.map(r=>`<li>${r.archivo} — token <strong>${r.token}</strong> no reconocido · agrégalo en ⚙️ Editor de Prefijos</li>`).join('');
     warnBanner.classList.add('on');
-  } else {
-    warnBanner.classList.remove('on');
-  }
+  } else { warnBanner.classList.remove('on'); }
 
   // Duplicados
-  const groups = {};
-  rawResults.forEach(r => {
-    const p = getPrefix(r.archivo);
-    if (!groups[p]) groups[p] = [];
-    groups[p].push(r);
+  const groups={};
+  rawResults.forEach(r=>{
+    const key=r.pre||r.token;
+    if(!groups[key]) groups[key]=[];
+    groups[key].push(r);
   });
-  const dupGroups = Object.entries(groups).filter(([,arr]) => arr.length > 1);
-  const resolved = {};
-  for (const [prefix, options] of dupGroups) {
-    const chosen = await askDuplicate(prefix, options);
-    resolved[prefix] = chosen ? chosen.archivo : null;
+  const dupGroups=Object.entries(groups).filter(([,arr])=>arr.length>1);
+  const resolved={};
+  for(const[key,options] of dupGroups){
+    const chosen=await askDuplicate(key,options);
+    resolved[key]=chosen?chosen.archivo:null;
   }
 
-  const dupBanner = document.getElementById('dupBanner');
-  const dupList   = document.getElementById('dupList');
-  if (dupGroups.length) {
-    dupList.innerHTML = dupGroups.map(([p, opts]) => {
-      const chosen = resolved[p];
-      return `<li><strong>${p} · ${TIENDAS[p]||p}</strong> — usando: ${chosen || 'cancelado (excluido)'}</li>`;
+  const dupBanner=document.getElementById('dupBanner');
+  const dupList=document.getElementById('dupList');
+  if(dupGroups.length){
+    dupList.innerHTML=dupGroups.map(([k])=>{
+      const nombre=TIENDAS[k]?TIENDAS[k].name:k;
+      return `<li><strong>${k} · ${nombre}</strong> — usando: ${resolved[k]||'cancelado (excluido)'}</li>`;
     }).join('');
     dupBanner.classList.add('on');
-  } else {
-    dupBanner.classList.remove('on');
-  }
+  } else { dupBanner.classList.remove('on'); }
 
-  let finalResults = rawResults.filter(r => {
-    if (r.error) return false;
-    const p = getPrefix(r.archivo);
-    if (resolved[p] !== undefined) return r.archivo === resolved[p];
+  let finalResults=rawResults.filter(r=>{
+    if(r.error) return false;
+    const key=r.pre||r.token;
+    if(resolved[key]!==undefined) return r.archivo===resolved[key];
     return true;
   });
 
-  // Ordenar según ORDEN configurable
-  finalResults.sort((a, b) => {
-    const ia = ORDEN.indexOf(getPrefix(a.archivo));
-    const ib = ORDEN.indexOf(getPrefix(b.archivo));
-    return (ia===-1?9999:ia) - (ib===-1?9999:ib);
+  finalResults.sort((a,b)=>{
+    const ia=ORDEN.indexOf(a.pre); const ib=ORDEN.indexOf(b.pre);
+    return (ia===-1?9999:ia)-(ib===-1?9999:ib);
   });
 
-  lastFinalResults = finalResults;
-
-  const total = finalResults.reduce((s,r) => s+r.gorras, 0);
-  const avg   = finalResults.length ? Math.round(total/finalResults.length) : 0;
-
-  document.getElementById('statT').textContent = finalResults.length;
-  document.getElementById('statG').textContent = total.toLocaleString();
-  document.getElementById('statA').textContent = avg.toLocaleString();
-  document.getElementById('metaD').textContent = finalResults.length + ' tiendas';
+  lastFinalResults=finalResults;
+  const total=finalResults.reduce((s,r)=>s+r.gorras,0);
+  const avg=finalResults.length?Math.round(total/finalResults.length):0;
+  document.getElementById('statT').textContent=finalResults.length;
+  document.getElementById('statG').textContent=total.toLocaleString();
+  document.getElementById('statA').textContent=avg.toLocaleString();
+  document.getElementById('metaD').textContent=finalResults.length+' tiendas';
 
   renderResultTable(finalResults);
   renderSplitPanel(finalResults);
-
-  resultsEl.style.display = 'block';
-  resultsEl.scrollIntoView({ behavior:'smooth', block:'start' });
+  resultsEl.style.display='block';
+  resultsEl.scrollIntoView({behavior:'smooth',block:'start'});
 });
 
-function renderResultTable(finalResults) {
-  const tbody = document.getElementById('rtBody');
-  tbody.innerHTML = '';
-  finalResults.forEach(r => {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `<td class="td-pre">${getPrefix(r.archivo)}</td><td class="td-name">${r.tienda}</td><td class="td-val">${r.gorras.toLocaleString()}</td>`;
+function renderResultTable(fr) {
+  const tbody=document.getElementById('rtBody');
+  tbody.innerHTML='';
+  fr.forEach(r=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td class="td-pre">${r.token}</td><td class="td-name">${r.tienda}</td><td class="td-val">${r.gorras.toLocaleString()}</td>`;
     tbody.appendChild(tr);
   });
 }
 
-function renderSplitPanel(finalResults) {
-  // Construir lista completa según ORDEN — tiendas sin dato = 0 o vacío
-  const mapaResultados = {};
-  finalResults.forEach(r => { mapaResultados[getPrefix(r.archivo)] = r; });
-
-  const lineasNombres = [];
-  const lineasCantidades = [];
-
-  ORDEN.forEach(pre => {
-    if (!TIENDAS[pre]) return;
-    const nombre = TIENDAS[pre];
-    const r = mapaResultados[pre];
-    const qty = r ? r.gorras : '';
-    lineasNombres.push(nombre);
-    lineasCantidades.push(qty === '' ? '' : String(qty));
+function renderSplitPanel(fr) {
+  const mapa={};
+  fr.forEach(r=>{if(r.pre) mapa[r.pre]=r;});
+  const lineasN=[], lineasC=[];
+  ORDEN.forEach(pre=>{
+    if(!TIENDAS[pre]) return;
+    lineasN.push(TIENDAS[pre].name);
+    const r=mapa[pre];
+    lineasC.push(r?String(r.gorras):'');
   });
-
-  // Tiendas con datos pero no en ORDEN (nuevas)
-  finalResults.forEach(r => {
-    const pre = getPrefix(r.archivo);
-    if (!ORDEN.includes(pre)) {
-      lineasNombres.push(r.tienda);
-      lineasCantidades.push(String(r.gorras));
+  fr.forEach(r=>{
+    if(r.pre&&!ORDEN.includes(r.pre)){
+      lineasN.push(r.tienda); lineasC.push(String(r.gorras));
     }
   });
-
-  document.getElementById('nombresOut').textContent    = lineasNombres.join('\n');
-  document.getElementById('cantidadesOut').textContent = lineasCantidades.join('\n');
+  document.getElementById('nombresOut').textContent=lineasN.join('\n');
+  document.getElementById('cantidadesOut').textContent=lineasC.join('\n');
 }
 
-// ── DUPLICATE MODAL ───────────────────────────────────────
-function askDuplicate(prefix, options) {
-  return new Promise(resolve => {
-    const overlay   = document.getElementById('modalOverlay');
-    const title     = document.getElementById('modalTitle');
-    const desc      = document.getElementById('modalDesc');
-    const optsEl    = document.getElementById('modalOptions');
-    const btnOk     = document.getElementById('modalConfirm');
-    const btnCancel = document.getElementById('modalCancel');
-    const tienda    = TIENDAS[prefix] || prefix;
-    title.textContent = `Duplicado: ${tienda}`;
-    desc.textContent  = `Se encontraron ${options.length} archivos para ${prefix}. Selecciona cuál usar:`;
-    let selected = null;
-    optsEl.innerHTML = '';
-    options.forEach((opt, i) => {
-      const div = document.createElement('div');
-      div.className = 'dup-option';
-      div.innerHTML = `<div class="dup-option-num">${i+1}</div><div class="dup-option-info"><div class="dup-option-name">${opt.tienda}</div><div class="dup-option-file">${opt.archivo}</div><div class="dup-option-file">${opt.gorras} gorras</div></div>`;
-      div.addEventListener('click', () => {
-        optsEl.querySelectorAll('.dup-option').forEach(d => d.classList.remove('selected'));
-        div.classList.add('selected');
-        selected = opt;
-      });
-      optsEl.appendChild(div);
-    });
-    overlay.classList.add('on');
-    const cleanup = () => { overlay.classList.remove('on'); btnOk.removeEventListener('click', onOk); btnCancel.removeEventListener('click', onCancel); };
-    const onOk     = () => { cleanup(); resolve(selected); };
-    const onCancel = () => { cleanup(); resolve(null); };
-    btnOk.addEventListener('click', onOk);
-    btnCancel.addEventListener('click', onCancel);
-  });
-}
-
-// ── PROCESS ONE FILE ─────────────────────────────────────
 async function processOne(fd) {
   try {
-    const data = await readFile(fd.file);
-    const wb   = XLSX.read(data, { type:'array' });
-    const ws   = wb.Sheets[wb.SheetNames[0]];
-    const rows = XLSX.utils.sheet_to_json(ws, { header:1, defval:null });
-    const row0 = rows[0] || [];
-    const ps   = row0[15] ? formatDate(row0[15]) : '';
-    const pe   = row0[20] ? formatDate(row0[20]) : '';
-    const period = ps ? `${ps} — ${pe}` : '';
-    const prefix = getPrefix(fd.name);
-    const tienda = TIENDAS[prefix] || prefix;
-    let gorras = 0;
-    for (const row of rows) {
-      if (row[10] && String(row[10]).trim().toUpperCase()==='GORRAS' && row[22])
-        gorras += Number(row[22]) || 0;
+    const data=await readFile(fd.file);
+    const wb=XLSX.read(data,{type:'array'});
+    const ws=wb.Sheets[wb.SheetNames[0]];
+    const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:null});
+    const row0=rows[0]||[];
+    const ps=row0[15]?formatDate(row0[15]):'';
+    const pe=row0[20]?formatDate(row0[20]):'';
+    const period=ps?`${ps} — ${pe}`:'';
+    const token=getToken(fd.name);
+    const pre=resolvePrefix(token);
+    const tienda=pre&&TIENDAS[pre]?TIENDAS[pre].name:token;
+    let gorras=0;
+    for(const row of rows){
+      if(row[10]&&String(row[10]).trim().toUpperCase()==='GORRAS'&&row[22])
+        gorras+=Number(row[22])||0;
     }
-    return { tienda, gorras, archivo:fd.name, period, error:false };
+    return {tienda,gorras,archivo:fd.name,period,token,pre,error:false};
   } catch(e) {
-    return { tienda:fd.name, gorras:0, archivo:fd.name, period:'', error:true };
+    return {tienda:fd.name,gorras:0,archivo:fd.name,period:'',token:fd.name,pre:null,error:true};
   }
 }
 
-function setProgress(done, total) {
-  const p = total ? Math.round(done/total*100) : 0;
-  progFill.style.width = p+'%';
-  progLabel.textContent = `Procesando ${done} de ${total}...`;
-  progPct.textContent = p+'%';
+function setProgress(done,total){
+  const p=total?Math.round(done/total*100):0;
+  progFill.style.width=p+'%';
+  progLabel.textContent=`Procesando ${done} de ${total}...`;
+  progPct.textContent=p+'%';
 }
-
-function readFile(file) {
-  return new Promise((res,rej) => {
-    const r = new FileReader();
-    r.onload  = e => res(new Uint8Array(e.target.result));
-    r.onerror = rej;
+function readFile(file){
+  return new Promise((res,rej)=>{
+    const r=new FileReader();
+    r.onload=e=>res(new Uint8Array(e.target.result));
+    r.onerror=rej;
     r.readAsArrayBuffer(file);
   });
 }
-
-function formatDate(val) {
-  if (!val) return '';
-  if (typeof val === 'number') { const d=XLSX.SSF.parse_date_code(val); return `${d.d}/${d.m}/${d.y}`; }
-  if (val instanceof Date) return `${val.getDate()}/${val.getMonth()+1}/${val.getFullYear()}`;
+function formatDate(val){
+  if(!val) return '';
+  if(typeof val==='number'){const d=XLSX.SSF.parse_date_code(val);return `${d.d}/${d.m}/${d.y}`;}
+  if(val instanceof Date) return `${val.getDate()}/${val.getMonth()+1}/${val.getFullYear()}`;
   return String(val).split('T')[0];
 }
 
-// ── COLLAPSE ─────────────────────────────────────────────
-function toggleCP(id) { document.getElementById(id).classList.toggle('open'); }
-
-// ── COPY ─────────────────────────────────────────────────
-document.getElementById('btnCopyCantidades').addEventListener('click', () => {
-  const txt = document.getElementById('cantidadesOut').textContent;
-  navigator.clipboard.writeText(txt).then(() => showToast('✓ Cantidades copiadas'));
-});
-document.getElementById('btnCopyNombres').addEventListener('click', () => {
-  const txt = document.getElementById('nombresOut').textContent;
-  navigator.clipboard.writeText(txt).then(() => showToast('✓ Nombres copiados'));
-});
-
-function showToast(msg) {
-  toast.textContent = msg;
-  toast.classList.add('on');
-  setTimeout(() => toast.classList.remove('on'), 2200);
+function askDuplicate(key,options){
+  return new Promise(resolve=>{
+    const overlay=document.getElementById('modalOverlay');
+    const title=document.getElementById('modalTitle');
+    const desc=document.getElementById('modalDesc');
+    const optsEl=document.getElementById('modalOptions');
+    const btnOk=document.getElementById('modalConfirm');
+    const btnCancel=document.getElementById('modalCancel');
+    const nombre=TIENDAS[key]?TIENDAS[key].name:key;
+    title.textContent=`Duplicado: ${nombre}`;
+    desc.textContent=`${options.length} archivos para la misma tienda. Selecciona cuál usar:`;
+    let selected=null;
+    optsEl.innerHTML='';
+    options.forEach((opt,i)=>{
+      const div=document.createElement('div');
+      div.className='dup-option';
+      div.innerHTML=`<div class="dup-option-num">${i+1}</div><div class="dup-option-info"><div class="dup-option-name">${opt.tienda}</div><div class="dup-option-file">${opt.archivo}</div><div class="dup-option-file">${opt.gorras} gorras</div></div>`;
+      div.addEventListener('click',()=>{optsEl.querySelectorAll('.dup-option').forEach(d=>d.classList.remove('selected'));div.classList.add('selected');selected=opt;});
+      optsEl.appendChild(div);
+    });
+    overlay.classList.add('on');
+    const cleanup=()=>{overlay.classList.remove('on');btnOk.removeEventListener('click',onOk);btnCancel.removeEventListener('click',onCancel);};
+    const onOk=()=>{cleanup();resolve(selected);};
+    const onCancel=()=>{cleanup();resolve(null);};
+    btnOk.addEventListener('click',onOk);
+    btnCancel.addEventListener('click',onCancel);
+  });
 }
 
-// ── CONFIGURACIÓN PANEL ───────────────────────────────────
-document.getElementById('configToggle').addEventListener('click', () => {
-  const body = document.getElementById('configBody');
-  const head = document.getElementById('configToggle');
-  const open = body.classList.toggle('on');
-  head.querySelector('span:last-child').textContent = open ? 'Cerrar ▴' : 'Ver / Editar ▾';
-  if (open) renderOrdenList();
+function toggleCP(id){document.getElementById(id).classList.toggle('open');}
+
+document.getElementById('btnCopyCantidades').addEventListener('click',()=>{
+  navigator.clipboard.writeText(document.getElementById('cantidadesOut').textContent).then(()=>showToast('✓ Cantidades copiadas'));
+});
+document.getElementById('btnCopyNombres').addEventListener('click',()=>{
+  navigator.clipboard.writeText(document.getElementById('nombresOut').textContent).then(()=>showToast('✓ Nombres copiados'));
+});
+function showToast(msg){
+  toast.textContent=msg; toast.classList.add('on');
+  setTimeout(()=>toast.classList.remove('on'),2200);
+}
+
+// Config toggle
+document.getElementById('configToggle').addEventListener('click',()=>{
+  const body=document.getElementById('configBody');
+  const open=body.classList.toggle('on');
+  document.getElementById('configArrow').textContent=open?'Cerrar ▴':'Ver / Editar ▾';
+  if(open){renderOrdenList();renderAliasList();}
 });
 
-// ── RENDER ORDEN CON DRAG & DROP ─────────────────────────
-let dragSrc = null;
+// Tabs
+document.querySelectorAll('.cfg-tab').forEach(tab=>{
+  tab.addEventListener('click',()=>{
+    document.querySelectorAll('.cfg-tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.cfg-tab-body').forEach(b=>b.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('tab-'+tab.dataset.tab).classList.add('active');
+    if(tab.dataset.tab==='alias') renderAliasList();
+    else renderOrdenList();
+  });
+});
 
-function renderOrdenList() {
-  const list = document.getElementById('ordenList');
-  list.innerHTML = '';
-  ORDEN.forEach((pre, idx) => {
-    if (!TIENDAS[pre]) return;
-    const item = document.createElement('div');
-    item.className = 'orden-item';
-    item.draggable = true;
-    item.dataset.pre = pre;
-    item.innerHTML = `
+// Orden drag & drop
+let dragSrc=null;
+function renderOrdenList(){
+  const list=document.getElementById('ordenList');
+  list.innerHTML='';
+  ORDEN.forEach((pre,idx)=>{
+    if(!TIENDAS[pre]) return;
+    const aliasExtra=TIENDAS[pre].aliases.filter(a=>a!==pre).join(', ');
+    const item=document.createElement('div');
+    item.className='orden-item'; item.draggable=true; item.dataset.pre=pre;
+    item.innerHTML=`
       <span class="orden-handle">⠿</span>
       <span class="orden-num">${idx+1}</span>
       <span class="orden-pre">${pre}</span>
-      <span class="orden-name">${TIENDAS[pre]}</span>
+      <span class="orden-name">${TIENDAS[pre].name}</span>
+      <span class="orden-aliases" title="${aliasExtra}">${aliasExtra||'—'}</span>
       <button class="btn-del" data-pre="${pre}">×</button>
     `;
-
-    // Drag events
-    item.addEventListener('dragstart', e => {
-      dragSrc = item;
-      item.classList.add('dragging');
-      e.dataTransfer.effectAllowed = 'move';
-    });
-    item.addEventListener('dragend', () => {
-      item.classList.remove('dragging');
-      list.querySelectorAll('.orden-item').forEach(i => i.classList.remove('drag-over'));
-    });
-    item.addEventListener('dragover', e => {
+    item.addEventListener('dragstart',e=>{dragSrc=item;item.classList.add('dragging');e.dataTransfer.effectAllowed='move';});
+    item.addEventListener('dragend',()=>{item.classList.remove('dragging');list.querySelectorAll('.orden-item').forEach(i=>i.classList.remove('drag-over'));});
+    item.addEventListener('dragover',e=>{e.preventDefault();list.querySelectorAll('.orden-item').forEach(i=>i.classList.remove('drag-over'));item.classList.add('drag-over');});
+    item.addEventListener('drop',e=>{
       e.preventDefault();
-      e.dataTransfer.dropEffect = 'move';
-      list.querySelectorAll('.orden-item').forEach(i => i.classList.remove('drag-over'));
-      item.classList.add('drag-over');
-    });
-    item.addEventListener('drop', e => {
-      e.preventDefault();
-      if (dragSrc === item) return;
-      const srcPre  = dragSrc.dataset.pre;
-      const destPre = item.dataset.pre;
-      const srcIdx  = ORDEN.indexOf(srcPre);
-      const dstIdx  = ORDEN.indexOf(destPre);
-      ORDEN.splice(srcIdx, 1);
-      ORDEN.splice(dstIdx, 0, srcPre);
+      if(dragSrc===item) return;
+      const si=ORDEN.indexOf(dragSrc.dataset.pre);
+      const di=ORDEN.indexOf(item.dataset.pre);
+      ORDEN.splice(si,1); ORDEN.splice(di,0,dragSrc.dataset.pre);
       renderOrdenList();
-      // Si hay resultados procesados, re-renderizar
-      if (lastFinalResults.length) {
-        lastFinalResults.sort((a, b) => {
-          const ia = ORDEN.indexOf(getPrefix(a.archivo));
-          const ib = ORDEN.indexOf(getPrefix(b.archivo));
-          return (ia===-1?9999:ia) - (ib===-1?9999:ib);
+      if(lastFinalResults.length){
+        lastFinalResults.sort((a,b)=>{
+          const ia=ORDEN.indexOf(a.pre),ib=ORDEN.indexOf(b.pre);
+          return(ia===-1?9999:ia)-(ib===-1?9999:ib);
         });
-        renderResultTable(lastFinalResults);
-        renderSplitPanel(lastFinalResults);
+        renderResultTable(lastFinalResults); renderSplitPanel(lastFinalResults);
       }
       showToast('Orden actualizado');
     });
-
-    // Eliminar
-    item.querySelector('.btn-del').addEventListener('click', () => {
-      const pre = item.dataset.pre;
-      if (confirm(`¿Eliminar "${TIENDAS[pre]}" (${pre})?`)) {
-        ORDEN = ORDEN.filter(p => p !== pre);
+    item.querySelector('.btn-del').addEventListener('click',()=>{
+      if(confirm(`¿Eliminar "${TIENDAS[pre].name}" (${pre})?`)){
+        ORDEN=ORDEN.filter(p=>p!==pre);
         delete TIENDAS[pre];
-        renderOrdenList();
-        if (lastFinalResults.length) {
-          renderResultTable(lastFinalResults);
-          renderSplitPanel(lastFinalResults);
-        }
+        renderOrdenList(); renderAliasList();
+        if(lastFinalResults.length){renderResultTable(lastFinalResults);renderSplitPanel(lastFinalResults);}
         showToast(`${pre} eliminado`);
       }
     });
-
     list.appendChild(item);
   });
 }
 
-// ── AGREGAR TIENDA ───────────────────────────────────────
-document.getElementById('btnAdd').addEventListener('click', () => {
-  const pre  = document.getElementById('inPre').value.trim().toUpperCase();
-  const name = document.getElementById('inName').value.trim().toUpperCase();
-  if (!pre || !name) { showToast('Ingresa prefijo y nombre'); return; }
-  if (TIENDAS[pre] && !confirm(`"${pre}" ya existe. ¿Sobreescribir?`)) return;
-  TIENDAS[pre] = name;
-  if (!ORDEN.includes(pre)) ORDEN.push(pre);
-  document.getElementById('inPre').value = '';
-  document.getElementById('inName').value = '';
-  renderOrdenList();
+document.getElementById('btnAdd').addEventListener('click',()=>{
+  const pre=document.getElementById('inPre').value.trim().toUpperCase();
+  const name=document.getElementById('inName').value.trim().toUpperCase();
+  if(!pre||!name){showToast('Ingresa prefijo y nombre');return;}
+  if(TIENDAS[pre]&&!confirm(`"${pre}" ya existe. ¿Sobreescribir?`)) return;
+  TIENDAS[pre]={name,aliases:[pre]};
+  if(!ORDEN.includes(pre)) ORDEN.push(pre);
+  document.getElementById('inPre').value='';
+  document.getElementById('inName').value='';
+  renderOrdenList(); renderAliasList();
   showToast(`${pre} – ${name} agregado`);
 });
 
-// ── GOOGLE DRIVE ─────────────────────────────────────────
-const DRIVE_API_KEY = 'AIzaSyDfAGmM_V-wF3oOGHCsc1EOJ_wDkpqG8uc';
-
-function parseFolderId(url) {
-  const m = url.match(/folders\/([a-zA-Z0-9_-]+)/);
-  return m ? m[1] : null;
+// Alias
+function renderAliasList(){
+  const list=document.getElementById('aliasList');
+  list.innerHTML='';
+  ORDEN.forEach(pre=>{
+    if(!TIENDAS[pre]) return;
+    const data=TIENDAS[pre];
+    const row=document.createElement('div');
+    row.className='alias-row';
+    row.innerHTML=`
+      <div class="alias-row-left">
+        <div class="alias-row-pre">${pre}</div>
+        <div class="alias-row-name">${data.name}</div>
+      </div>
+      <div class="alias-tags" id="atags-${pre}"></div>
+      <div class="alias-add-form">
+        <input type="text" class="alias-input" id="ainput-${pre}" placeholder="NUEVO ALIAS" maxlength="20">
+        <button class="btn-sm" data-pre="${pre}">+ Añadir</button>
+      </div>
+    `;
+    list.appendChild(row);
+    renderAliasTags(pre);
+    row.querySelector('.btn-sm').addEventListener('click',()=>{
+      const inp=document.getElementById(`ainput-${pre}`);
+      const val=inp.value.trim().toUpperCase();
+      if(!val) return;
+      const existente=resolvePrefix(val);
+      if(existente&&existente!==pre){showToast(`"${val}" ya pertenece a ${existente}`);return;}
+      if(!TIENDAS[pre].aliases.includes(val)){
+        TIENDAS[pre].aliases.push(val);
+        renderAliasTags(pre); renderOrdenList();
+        showToast(`Alias "${val}" agregado a ${pre}`);
+      }
+      inp.value='';
+    });
+    row.querySelector('.alias-input').addEventListener('keydown',e=>{if(e.key==='Enter') row.querySelector('.btn-sm').click();});
+  });
 }
 
-document.getElementById('btnDrive').addEventListener('click', async () => {
-  const url      = document.getElementById('driveLink').value.trim();
-  const status   = document.getElementById('driveStatus');
-  const folderId = parseFolderId(url);
-  if (!folderId) { status.textContent = 'Link inválido — copia el link completo de la carpeta'; status.className='drive-status err'; return; }
-  status.textContent = 'Conectando con Google Drive...'; status.className='drive-status';
-  try {
-    const listUrl = `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents+and+mimeType='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'+and+trashed=false&key=${DRIVE_API_KEY}&fields=files(id,name,size)&pageSize=1000`;
-    const listRes = await fetch(listUrl);
-    if (!listRes.ok) throw new Error('No se pudo acceder. Verifica que la carpeta esté compartida.');
-    const listData = await listRes.json();
-    const files = listData.files || [];
-    if (!files.length) { status.textContent='No se encontraron archivos .xlsx'; status.className='drive-status err'; return; }
-    status.textContent = `Descargando ${files.length} archivos...`;
-    let loaded = 0;
-    const driveFiles = [];
-    for (const f of files) {
-      const dlRes = await fetch(`https://www.googleapis.com/drive/v3/files/${f.id}?alt=media&key=${DRIVE_API_KEY}`);
-      if (!dlRes.ok) continue;
-      const blob = await dlRes.blob();
-      driveFiles.push(new File([blob], f.name, { type: blob.type }));
-      loaded++;
-      status.textContent = `Descargando ${loaded} de ${files.length}...`;
+function renderAliasTags(pre){
+  const container=document.getElementById(`atags-${pre}`);
+  if(!container||!TIENDAS[pre]) return;
+  container.innerHTML='';
+  TIENDAS[pre].aliases.forEach(alias=>{
+    const isMain=alias===pre;
+    const tag=document.createElement('span');
+    tag.className='alias-tag'+(isMain?' is-main':'');
+    tag.innerHTML=alias+(isMain?'':` <button class="alias-tag-rm" data-pre="${pre}" data-alias="${alias}">×</button>`);
+    container.appendChild(tag);
+  });
+  container.querySelectorAll('.alias-tag-rm').forEach(b=>{
+    b.addEventListener('click',()=>{
+      TIENDAS[b.dataset.pre].aliases=TIENDAS[b.dataset.pre].aliases.filter(a=>a!==b.dataset.alias);
+      renderAliasTags(b.dataset.pre);
+      showToast(`Alias "${b.dataset.alias}" eliminado`);
+    });
+  });
+}
+
+// Google Drive
+const DRIVE_API_KEY='AIzaSyDfAGmM_V-wF3oOGHCsc1EOJ_wDkpqG8uc';
+function parseFolderId(url){const m=url.match(/folders\/([a-zA-Z0-9_-]+)/);return m?m[1]:null;}
+document.getElementById('btnDrive').addEventListener('click',async()=>{
+  const url=document.getElementById('driveLink').value.trim();
+  const status=document.getElementById('driveStatus');
+  const folderId=parseFolderId(url);
+  if(!folderId){status.textContent='Link inválido';status.className='drive-status err';return;}
+  status.textContent='Conectando...';status.className='drive-status';
+  try{
+    const listUrl=`https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents+and+mimeType='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'+and+trashed=false&key=${DRIVE_API_KEY}&fields=files(id,name)&pageSize=1000`;
+    const listRes=await fetch(listUrl);
+    if(!listRes.ok) throw new Error('No se pudo acceder. Verifica que la carpeta esté compartida.');
+    const files=(await listRes.json()).files||[];
+    if(!files.length){status.textContent='Sin archivos .xlsx';status.className='drive-status err';return;}
+    status.textContent=`Descargando ${files.length} archivos...`;
+    let loaded=0; const driveFiles=[];
+    for(const f of files){
+      const dlRes=await fetch(`https://www.googleapis.com/drive/v3/files/${f.id}?alt=media&key=${DRIVE_API_KEY}`);
+      if(!dlRes.ok) continue;
+      const blob=await dlRes.blob();
+      driveFiles.push(new File([blob],f.name,{type:blob.type}));
+      status.textContent=`Descargando ${++loaded} de ${files.length}...`;
     }
     addFiles(driveFiles);
-    status.textContent = `✓ ${loaded} archivos cargados desde Drive`;
-    status.className = 'drive-status ok';
-  } catch(e) {
-    status.textContent = e.message || 'Error al conectar con Google Drive';
-    status.className = 'drive-status err';
+    status.textContent=`✓ ${loaded} archivos cargados`;status.className='drive-status ok';
+  }catch(e){
+    status.textContent=e.message||'Error al conectar';status.className='drive-status err';
   }
 });
 </script>
