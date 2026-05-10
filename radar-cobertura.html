@@ -113,15 +113,17 @@ body{font-family:-apple-system,'Helvetica Neue',Arial,sans-serif;background:var(
 /* HEATMAP */
 .hmap-container{padding:18px 20px;overflow-x:auto;}
 .hmap-table{border-collapse:collapse;font-size:9px;}
-.hmap-table th{font-family:var(--mono);color:var(--muted);padding:3px 4px;text-align:center;font-weight:600;}
-.hmap-table td.day-lbl{font-family:var(--mono);font-size:10px;color:var(--text2);padding:3px 10px 3px 0;white-space:nowrap;font-weight:500;}
+.hmap-table th{font-family:var(--mono);font-size:10px;color:#fff;padding:6px 4px;text-align:center;font-weight:700;background:#1e293b;letter-spacing:.5px;}
+.hmap-table th:first-child{background:#0f172a;border-radius:6px 0 0 0;}
+.hmap-table th:last-child{border-radius:0 6px 0 0;}
+.hmap-table td.day-lbl{font-family:var(--mono);font-size:10px;color:#475569;padding:3px 12px 3px 0;white-space:nowrap;font-weight:600;background:#f8fafc;}
 .hcell{width:44px;height:24px;border-radius:3px;text-align:center;font-weight:700;vertical-align:middle;line-height:24px;}
 .hmap-legend{display:flex;align-items:center;gap:10px;margin-top:12px;flex-wrap:wrap;font-size:10px;color:var(--muted);}
 .btn-dl{font-family:inherit;font-size:10px;font-weight:600;color:#888;background:#fff;border:1px solid #e0e0e0;border-radius:4px;padding:4px 10px;cursor:pointer;transition:all .12s;display:flex;align-items:center;gap:4px;white-space:nowrap;}
 .btn-dl:hover{border-color:#888;color:#111;}
-.hmap-table td.total-lbl{font-family:var(--mono);font-size:10px;color:#111;padding:4px 10px 4px 0;white-space:nowrap;font-weight:800;border-top:2px solid #e0e0e0;}
-.hmap-table td.total-cell{padding:2px;border-top:2px solid #e0e0e0;}
-.hcell-total{width:44px;height:24px;border-radius:4px;text-align:center;font-weight:800;vertical-align:middle;line-height:24px;font-size:10px;}
+.hmap-table td.total-lbl{font-family:var(--mono);font-size:10px;color:#fff;padding:6px 12px 6px 0;white-space:nowrap;font-weight:800;background:#0f172a;border-top:3px solid #0f172a;}
+.hmap-table td.total-cell{padding:2px;background:#0f172a;border-top:3px solid #0f172a;}
+.hcell-total{width:44px;height:26px;border-radius:4px;text-align:center;font-weight:800;vertical-align:middle;line-height:26px;font-size:11px;}
 .hldot{width:12px;height:12px;border-radius:2px;display:inline-block;margin-right:3px;vertical-align:middle;}
 
 /* CURVA */
@@ -552,7 +554,7 @@ function renderResults(horario) {
     const cells = horasOrden.map(h => {
       const v = porFechaHora[f][h] || 0;
       const c = cellColor(v);
-      return `<td style="padding:2px;"><div class="hcell" style="background:${c.bg};color:${c.fg};">${v>0?v:''}</div></td>`;
+      return `<td style="padding:2px;background:#f8fafc;"><div class="hcell" style="background:${c.bg};color:${c.fg};">${v>0?v:''}</div></td>`;
     }).join('');
     return `<tr><td class="day-lbl">${fmtDia(f)}</td>${cells}</tr>`;
   }).join('');
@@ -565,7 +567,7 @@ function renderResults(horario) {
   const maxTotal = Math.max(...Object.values(totalsPorHora));
   const totalCells = horasOrden.map(h => {
     const v = totalsPorHora[h];
-    if (!v) return `<td class="total-cell"><div class="hcell-total" style="background:#f3f4f6;color:#ccc;">0</div></td>`;
+    if (!v) return `<td class="total-cell"><div class="hcell-total" style="background:#1e293b;color:#475569;">0</div></td>`;
     const r = v/maxTotal;
     let bg, fg;
     if (r > 0.75)     { bg='#0e7490'; fg='#fff'; }
@@ -580,7 +582,7 @@ function renderResults(horario) {
   document.getElementById('metaHeatmap').textContent = fechasOrdenadas.length + ' días · tickets por hora';
   document.getElementById('hmapBody').innerHTML = `
     <table class="hmap-table">
-      <thead><tr><th></th>${thCols}</tr></thead>
+      <thead style="background:#1e293b;"><tr><th style="background:#0f172a;padding:6px 8px;border-radius:6px 0 0 0;"></th>${thCols}</tr></thead>
       <tbody>
         ${rows}
         <tr>
