@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SNAPS · Radar de Cobertura v1.1</title>
+<title>SNAPS · Radar de Cobertura v1.2</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <style>
 :root{
   --bg:#f2f2f2;--surface:#fff;--surface2:#f8f8f8;
   --border:#e5e5e5;--text:#111;--text2:#666;--muted:#aaa;
-  --accent:#1a56db;--accent-light:#eff6ff;
+  --accent:#0369a1;--accent-light:#e0f2fe;
   --red:#dc2626;--green:#16a34a;--amber:#d97706;
   --mono:'Courier New',monospace;
   --radius:8px;--radius-lg:12px;
@@ -76,7 +76,7 @@ body{font-family:-apple-system,'Helvetica Neue',Arial,sans-serif;background:var(
 .sum-pill{display:flex;flex-direction:column;justify-content:center;padding:4px 24px 4px 0;}
 .sum-label{font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:4px;}
 .sum-value{font-size:15px;font-weight:800;color:#fff;line-height:1;}
-.sum-value.pico{color:#60a5fa;}
+.sum-value.pico{color:#22d3ee;}
 .sum-value.valle{color:#f87171;}
 .sum-div{width:1px;background:rgba(255,255,255,.1);margin:0 24px 0 0;min-height:32px;align-self:stretch;}
 
@@ -140,7 +140,7 @@ body{font-family:-apple-system,'Helvetica Neue',Arial,sans-serif;background:var(
 <div class="header">
   <div class="brand">
     <span class="brand-name">SNAPS</span>
-    <span class="brand-sub">Radar de Cobertura · v1.1</span>
+    <span class="brand-sub">Radar de Cobertura · v1.2</span>
   </div>
   <div class="header-right">
     <span class="ver-tag">Patrones de venta · Planificación de turnos</span>
@@ -194,11 +194,11 @@ body{font-family:-apple-system,'Helvetica Neue',Arial,sans-serif;background:var(
       <div class="panel-body">
         <div class="bars-container" id="barsBody"></div>
         <div class="bars-legend">
-          <span><span class="ldot" style="background:#1a56db;"></span>Hora pico</span>
-          <span><span class="ldot" style="background:#93c5fd;"></span>Alta actividad</span>
-          <span><span class="ldot" style="background:#bfdbfe;"></span>Media</span>
-          <span><span class="ldot" style="background:#f0f0f0;border:1px solid #e0e0e0;"></span>Baja</span>
-          <span><span class="ldot" style="background:#fee2e2;border:1px solid #fecaca;"></span>Hora valle</span>
+          <span><span class="ldot" style="background:#0369a1;"></span>Hora pico</span>
+          <span><span class="ldot" style="background:#0ea5e9;"></span>Alta actividad</span>
+          <span><span class="ldot" style="background:#22d3ee;"></span>Media</span>
+          <span><span class="ldot" style="background:#e0f2fe;border:1px solid #a5f3fc;"></span>Baja</span>
+          <span><span class="ldot" style="background:#e2e8f0;border:1px solid #cbd5e1;"></span>Hora valle</span>
         </div>
       </div>
     </div>
@@ -494,11 +494,11 @@ function renderResults(horario) {
     const esPico  = hora == horaPico;
     const esValle = hora == horaValle;
     let barColor, tagHTML = '';
-    if (esPico)       { barColor='#1a56db'; tagHTML=`<span class="bar-tag tag-pico">PICO</span>`; }
-    else if (esValle) { barColor='#fca5a5'; tagHTML=`<span class="bar-tag tag-valle">VALLE</span>`; }
-    else if (pct>60)  { barColor='#60a5fa'; tagHTML=`<span class="bar-tag tag-empty">·</span>`; }
-    else if (pct>30)  { barColor='#93c5fd'; tagHTML=`<span class="bar-tag tag-empty">·</span>`; }
-    else              { barColor='#bfdbfe'; tagHTML=`<span class="bar-tag tag-empty">·</span>`; }
+    if (esPico)       { barColor='#0e7490'; tagHTML=`<span class="bar-tag tag-pico">PICO</span>`; }
+    else if (esValle) { barColor='#cbd5e1'; tagHTML=`<span class="bar-tag tag-valle">VALLE</span>`; }
+    else if (pct>60)  { barColor='#0891b2'; tagHTML=`<span class="bar-tag tag-empty">·</span>`; }
+    else if (pct>30)  { barColor='#22d3ee'; tagHTML=`<span class="bar-tag tag-empty">·</span>`; }
+    else              { barColor='#cffafe'; tagHTML=`<span class="bar-tag tag-empty">·</span>`; }
     return `<div class="bar-row">
       <span class="bar-lbl ${esPico?'pico':esValle?'valle':''}">${hora}:00 h</span>
       <div class="bar-outer"><div class="bar-inner" style="width:${pct}%;background:${barColor};"></div></div>
@@ -530,12 +530,12 @@ function renderResults(horario) {
   const maxCell = Math.max(...fechasOrdenadas.flatMap(f => horasOrden.map(h => porFechaHora[f][h]||0)));
 
   function cellColor(v) {
-    if (!v) return {bg:'#f3f4f6',fg:'transparent'};
+    if (!v) return {bg:'#f1f5f9',fg:'transparent'};
     const r = v/maxCell;
-    if (r > 0.75) return {bg:'#1d4ed8',fg:'#fff'};
-    if (r > 0.5)  return {bg:'#3b82f6',fg:'#fff'};
-    if (r > 0.25) return {bg:'#93c5fd',fg:'#1e3a5f'};
-    return {bg:'#dbeafe',fg:'#1e3a5f'};
+    if (r > 0.75) return {bg:'#0369a1',fg:'#fff'};
+    if (r > 0.5)  return {bg:'#0ea5e9',fg:'#fff'};
+    if (r > 0.25) return {bg:'#7dd3fc',fg:'#0c4a6e'};
+    return {bg:'#e0f2fe',fg:'#0c4a6e'};
   }
 
   function fmtDia(str) {
@@ -568,13 +568,12 @@ function renderResults(horario) {
     if (!v) return `<td class="total-cell"><div class="hcell-total" style="background:#f3f4f6;color:#ccc;">0</div></td>`;
     const r = v/maxTotal;
     let bg, fg;
-    if (r > 0.75)     { bg='#1d4ed8'; fg='#fff'; }
-    else if (r > 0.5) { bg='#3b82f6'; fg='#fff'; }
-    else if (r > 0.25){ bg='#93c5fd'; fg='#1e3a5f'; }
-    else              { bg='#dbeafe'; fg='#1e3a5f'; }
-    // Destacar la hora pico global
+    if (r > 0.75)     { bg='#0e7490'; fg='#fff'; }
+    else if (r > 0.5) { bg='#0891b2'; fg='#fff'; }
+    else if (r > 0.25){ bg='#67e8f9'; fg='#164e63'; }
+    else              { bg='#cffafe'; fg='#164e63'; }
     const esPicoGlobal = v === maxTotal;
-    const border = esPicoGlobal ? 'outline:2px solid #1a56db;outline-offset:-2px;' : '';
+    const border = esPicoGlobal ? 'outline:2px solid #0e7490;outline-offset:-2px;' : '';
     return `<td class="total-cell"><div class="hcell-total" style="background:${bg};color:${fg};${border}">${v}</div></td>`;
   }).join('');
 
@@ -591,12 +590,12 @@ function renderResults(horario) {
       </tbody>
     </table>
     <div class="hmap-legend">
-      <span><span class="hldot" style="background:#f3f4f6;border:1px solid #e5e7eb;"></span>0</span>
-      <span><span class="hldot" style="background:#dbeafe;"></span>1–2</span>
-      <span><span class="hldot" style="background:#93c5fd;"></span>3–5</span>
-      <span><span class="hldot" style="background:#3b82f6;"></span>6–8</span>
-      <span><span class="hldot" style="background:#1d4ed8;"></span>9+</span>
-      <span style="margin-left:8px;"><span class="hldot" style="background:#1d4ed8;outline:2px solid #1a56db;outline-offset:-2px;"></span>Hora pico semana</span>
+      <span><span class="hldot" style="background:#f1f5f9;border:1px solid #e2e8f0;"></span>0</span>
+      <span><span class="hldot" style="background:#e0f2fe;"></span>1–2</span>
+      <span><span class="hldot" style="background:#7dd3fc;"></span>3–5</span>
+      <span><span class="hldot" style="background:#0ea5e9;"></span>6–8</span>
+      <span><span class="hldot" style="background:#0369a1;"></span>9+</span>
+      <span style="margin-left:8px;"><span class="hldot" style="background:#0369a1;outline:2px solid #0e7490;outline-offset:-2px;"></span>Hora pico semana</span>
     </div>
   `;
 
@@ -641,7 +640,7 @@ function renderResults(horario) {
 
     const dots = pts.map((p,i) => {
       const esMejor = dias[i][1] === maxV;
-      return `<circle cx="${p[0]}" cy="${p[1]}" r="${esMejor?5:3}" fill="${esMejor?'#1a56db':'#60a5fa'}" stroke="#fff" stroke-width="1.5"/>`;
+      return `<circle cx="${p[0]}" cy="${p[1]}" r="${esMejor?5:3}" fill="${esMejor?'#0e7490':'#22d3ee'}" stroke="#fff" stroke-width="1.5"/>`;
     }).join('');
 
     document.getElementById('curvaBody').innerHTML = `
@@ -649,12 +648,12 @@ function renderResults(horario) {
         ${yLines}
         <defs>
           <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.18"/>
-            <stop offset="100%" stop-color="#3b82f6" stop-opacity="0.02"/>
+            <stop offset="0%" stop-color="#0891b2" stop-opacity="0.18"/>
+            <stop offset="100%" stop-color="#0891b2" stop-opacity="0.02"/>
           </linearGradient>
         </defs>
         <path d="${areaD}" fill="url(#areaGrad)"/>
-        <path d="${pathD}" fill="none" stroke="#1a56db" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+        <path d="${pathD}" fill="none" stroke="#0891b2" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
         ${dots}
         ${xLabels}
       </svg>`;
