@@ -510,26 +510,30 @@ function renderResults(horario) {
   }).join('');
   document.getElementById('barsBody').innerHTML = barsHTML || '<div style="padding:20px;color:#aaa;font-size:12px;">Sin datos</div>';
 
-  // 5. HEATMAP días × horas
+  // 5. HEATMAP — compilado por día de semana
   const diasSemana = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
-  const horasOrden = Array.from({length:14},(_,i)=>i+9); // 9-22
-  
-  // Agrupar por fecha y hora
-  const porFechaHora = {};
+  const diasOrden  = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom']; // Lun→Dom
+  const horasOrden = Array.from({length:14},(_,i)=>i+9); // 9h-22h
+
+  // Agrupar por día de semana (0=Dom…6=Sáb) y hora
+  const porDiaSemana = {}; // { 'Lun':{9:0,10:0,...}, ... }
+  diasOrden.forEach(d => { porDiaSemana[d] = {}; horasOrden.forEach(h => porDiaSemana[d][h]=0); });
+
   horario.forEach(t => {
-    const fecha = t.fecha;
+    if (!t.fecha) return;
     const h = parseInt((t.hora||'00').split(':')[0]);
-    if (!fecha || h < 9 || h > 22) return;
-    if (!porFechaHora[fecha]) porFechaHora[fecha] = {};
-    porFechaHora[fecha][h] = (porFechaHora[fecha][h] || 0) + 1;
+    if (h < 9 || h > 22) return;
+    const p = t.fecha.split('/');
+    if (p.length < 3) return;
+    const dow = new Date(p[2], parseInt(p[1],10)-1, parseInt(p[0],10)).getDay(); // 0=Dom
+    // Convertir a nombre
+    const nombre = diasSemana[dow];
+    if (!porDiaSemana[nombre]) return;
+    porDiaSemana[nombre][h] = (porDiaSemana[nombre][h]||0) + 1;
   });
 
-  // Ordenar fechas DD/MM/YYYY correctamente
-  const fechasOrdenadas = Object.keys(porFechaHora).sort((a,b)=>{
-    const [da,ma,ya]=a.split('/'); const [db,mb,yb]=b.split('/');
-    return new Date(ya,ma-1,da)-new Date(yb,mb-1,db);
-  });
-  const maxCell = Math.max(...fechasOrdenadas.flatMap(f => horasOrden.map(h => porFechaHora[f][h]||0)));
+  // Calcular max para escala de color
+  const maxCell = Math.max(...diasOrden.flatMap(d => horasOrden.map(h => porDiaSemana[d][h]||0)), 1);
 
   function cellColor(v) {
     if (!v) return {bg:'#f1f5f9',fg:'transparent'};
@@ -540,40 +544,33 @@ function renderResults(horario) {
     return {bg:'#deebf7',fg:'#08306b'};
   }
 
-  function fmtDia(str) {
-    const p = str.split('/');
-    if (p.length < 3) return str;
-    try {
-      const d = new Date(p[2], parseInt(p[1],10)-1, parseInt(p[0],10));
-      return diasSemana[d.getDay()] + ' ' + p[0]+'/'+p[1];
-    } catch { return str; }
-  }
-
   const thCols = horasOrden.map(h => `<th>${h}h</th>`).join('');
-  const rows = fechasOrdenadas.map(f => {
+  const rows = diasOrden.map(dia => {
     const cells = horasOrden.map(h => {
-      const v = porFechaHora[f][h] || 0;
+      const v = porDiaSemana[dia][h] || 0;
       const c = cellColor(v);
       return `<td style="padding:2px;background:#f4f7fa;border:none;"><div class="hcell" style="background:${c.bg};color:${c.fg};">${v>0?v:''}</div></td>`;
     }).join('');
-    return `<tr><td class="day-lbl">${fmtDia(f)}</td>${cells}</tr>`;
+    return `<tr><td class="day-lbl">${dia}</td>${cells}</tr>`;
   }).join('');
 
-  // TOTALES POR HORA
+  // TOTALES POR HORA (suma de todos los días de semana)
   const totalsPorHora = {};
   horasOrden.forEach(h => {
-    totalsPorHora[h] = fechasOrdenadas.reduce((s,f) => s + (porFechaHora[f][h]||0), 0);
+    totalsPorHora[h] = diasOrden.reduce((s,d) => s + (porDiaSemana[d][h]||0), 0);
   });
-  const maxTotal = Math.max(...Object.values(totalsPorHora));
+  const maxTotal = Math.max(...Object.values(totalsPorHora), 1);
   const totalCells = horasOrden.map(h => {
     const v = totalsPorHora[h];
     const esPico = v === maxTotal;
     const txtColor = v ? '#fff' : 'rgba(255,255,255,.2)';
     const acento = esPico ? 'border-left:3px solid #6aaed6;' : '';
-    return `<td class="total-cell" style="padding:2px;"><div class="hcell-total" style="background:#0f172a;color:${txtColor};${acento}">${v}</div></td>`;
+    return `<td class="total-cell" style="padding:2px;"><div class="hcell-total" style="background:#0d1f35;color:${txtColor};${acento};width:42px;">${v}</div></td>`;
   }).join('');
 
-  document.getElementById('metaHeatmap').textContent = fechasOrdenadas.length + ' días · tickets por hora';
+  // Fechas únicas para el meta
+  const fechasUnicas = [...new Set(horario.map(t=>t.fecha).filter(Boolean))];
+  document.getElementById('metaHeatmap').textContent = fechasUnicas.length + ' días · compilado por día de semana';
   document.getElementById('hmapBody').innerHTML = `
     <table class="hmap-table">
       <thead style="background:#1e293b;"><tr><th style="background:#0d1f35;padding:6px 8px;"></th>${thCols}</tr></thead>
@@ -636,7 +633,10 @@ function renderResults(horario) {
 
     const dots = pts.map((p,i) => {
       const esMejor = dias[i][1] === maxV;
-      return `<circle cx="${p[0]}" cy="${p[1]}" r="${esMejor?5:3}" fill="${esMejor?'#2171b5':'#9ecae1'}" stroke="#fff" stroke-width="1.5"/>`;
+      const esDestacado = esMejor || dias[i][1] > maxV * 0.8;
+      const label = esDestacado ? `<text x="${p[0]}" y="${p[1]-10}" text-anchor="middle" font-size="10" font-weight="700" fill="#2171b5" font-family="Courier New">${fmt(dias[i][1])}</text>` : '';
+      const circle = `<circle cx="${p[0]}" cy="${p[1]}" r="${esMejor?6:esDestacado?4:3}" fill="${esMejor?'#2171b5':esDestacado?'#4292c6':'#9ecae1'}" stroke="#fff" stroke-width="1.5"/>`;
+      return label + circle;
     }).join('');
 
     document.getElementById('curvaBody').innerHTML = `
