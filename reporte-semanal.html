@@ -71,7 +71,7 @@ body { font-family: -apple-system, 'Helvetica Neue', Arial, sans-serif; font-siz
 .actions { display: flex; gap: 8px; align-items: center; margin-bottom: 20px; }
 .btn { font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.5px; padding: 10px 22px; border-radius: 6px; cursor: pointer; border: none; transition: all 0.12s; }
 .btn-primary { background: #434343; color: #fff; }
-.btn-primary:hover:not(:disabled) { background: #0070E0; }
+.btn-primary:hover:not(:disabled) { background: #262626; }
 .btn-ghost  { background: #fff; color: #666; border: 1px solid #ddd; }
 .btn-ghost:hover:not(:disabled) { border-color: #999; color: #111; }
 .btn:disabled { opacity: .3; cursor: not-allowed; }
@@ -211,7 +211,7 @@ body { font-family: -apple-system, 'Helvetica Neue', Arial, sans-serif; font-siz
 .alias-input { font-family: monospace; font-size: 11px; background: #fff; border: 1px solid #ddd; border-radius: 4px; padding: 3px 7px; width: 100px; text-transform: uppercase; outline: none; }
 .alias-input:focus { border-color: #434343; }
 .btn-sm { font-size: 10px; font-weight: 700; background: #434343; color: #fff; border: none; border-radius: 4px; padding: 4px 9px; cursor: pointer; font-family: inherit; white-space: nowrap; }
-.btn-sm:hover { background: #0070E0; }
+.btn-sm:hover { background: #262626; }
 
 /* Guardar */
 .cfg-save-bar { padding: 14px 20px; background: #434343; border-top: 1px solid #333; flex-shrink: 0; display: flex; gap: 8px; align-items: center; }
@@ -248,21 +248,21 @@ body { font-family: -apple-system, 'Helvetica Neue', Arial, sans-serif; font-siz
     </div>
     <div class="header-right">
       <div class="period-tag" id="periodTag">Sin procesar</div>
-      <button class="btn-cfg" id="btnOpenCfg">⚙️ Tiendas</button>
+      <button class="btn-cfg" id="btnOpenCfg">Tiendas</button>
     </div>
   </div>
 
   <!-- ZONA DE CARGA -->
   <div class="upload-zone">
     <div class="upload-tabs">
-      <div class="utab active" data-tab="local">📂 Desde computadora</div>
-      <div class="utab" data-tab="drive">☁️ Desde Google Drive</div>
+      <div class="utab active" data-tab="local">Desde computadora</div>
+      <div class="utab" data-tab="drive">Desde Google Drive</div>
     </div>
 
     <div class="utab-body active" id="utab-local">
       <div class="drop" id="drop">
         <input type="file" id="fileInput" accept=".xlsx" multiple>
-        <div class="drop-icon">📊</div>
+        
         <h3>Arrastra los reportes aquí</h3>
         <p>Acepta todos los archivos .xlsx · sin límite de cantidad</p>
       </div>
@@ -439,7 +439,7 @@ body { font-family: -apple-system, 'Helvetica Neue', Arial, sans-serif; font-siz
 <div class="cfg-drawer-backdrop" id="cfgBackdrop"></div>
 <div class="cfg-drawer" id="cfgDrawer">
   <div class="cfg-drawer-head">
-    <span class="cfg-drawer-title">⚙️ Configuración de Tiendas</span>
+    <span class="cfg-drawer-title">Configuración de Tiendas</span>
     <button class="cfg-close" id="btnCloseCfg">×</button>
   </div>
   <div class="cfg-tabs">
@@ -448,7 +448,7 @@ body { font-family: -apple-system, 'Helvetica Neue', Arial, sans-serif; font-siz
   </div>
 
   <div class="cfg-tab-body active" id="tab-orden">
-    <div class="cfg-hint">💡 Arrastra ⠿ para reordenar. El orden se aplica a los resultados y al panel de copia.</div>
+    <div class="cfg-hint">Arrastra ⠿ para reordenar. El orden se aplica a los resultados y al panel de copia.</div>
     <div class="orden-list" id="ordenList"></div>
     <div class="add-form">
       <input type="text" id="inPre"  class="in-pre"  placeholder="PREFIJO" maxlength="10">
@@ -458,12 +458,12 @@ body { font-family: -apple-system, 'Helvetica Neue', Arial, sans-serif; font-siz
   </div>
 
   <div class="cfg-tab-body" id="tab-alias">
-    <div class="cfg-hint">🔡 Agrega variantes del prefijo. <strong>Obl</strong>, <strong>OBLATOS</strong> o <strong>obl_gdl</strong> se reconocen como la misma tienda. El alias principal (gris) no se borra.</div>
+    <div class="cfg-hint">Agrega variantes del prefijo. <strong>Obl</strong>, <strong>OBLATOS</strong> o <strong>obl_gdl</strong> se reconocen como la misma tienda. El alias principal (gris) no se borra.</div>
     <div class="alias-list" id="aliasList"></div>
   </div>
 
   <div class="cfg-save-bar">
-    <button class="btn-save" id="btnSaveConfig">💾 Guardar y cerrar</button>
+    <button class="btn-save" id="btnSaveConfig">Guardar y cerrar</button>
     <span class="cfg-save-note">Los cambios aplican a los resultados actuales</span>
   </div>
 </div>
@@ -641,7 +641,7 @@ btnProcess.addEventListener('click', async () => {
 
   const unknown=rawResults.filter(r=>!r.error&&!r.pre);
   if(unknown.length){
-    document.getElementById('warnList').innerHTML=unknown.map(r=>`<li><strong>${r.archivo}</strong> — el nombre del archivo no coincide con ninguna tienda registrada (token detectado: <strong>${r.token}</strong>). Verificar nomenclatura con el punto de venta o agregar el prefijo en ⚙️ Configurar tiendas.</li>`).join('');
+    document.getElementById('warnList').innerHTML=unknown.map(r=>`<li><strong>${r.archivo}</strong> — el nombre del archivo no coincide con ninguna tienda registrada (token detectado: <strong>${r.token}</strong>). Verificar nomenclatura con el punto de venta o agregar el prefijo en Configurar tiendas.</li>`).join('');
     document.getElementById('warnBanner').classList.add('on');
   } else { document.getElementById('warnBanner').classList.remove('on'); }
 
@@ -811,10 +811,10 @@ function askDuplicate(key,options){
 function toggleCP(id){document.getElementById(id).classList.toggle('open');}
 
 document.getElementById('btnCopyCantidades').addEventListener('click',()=>{
-  navigator.clipboard.writeText(document.getElementById('cantidadesOut').textContent).then(()=>showToast('✓ Cantidades copiadas'));
+  navigator.clipboard.writeText(document.getElementById('cantidadesOut').textContent).then(()=>showToast('Cantidades copiadas'));
 });
 document.getElementById('btnCopyNombres').addEventListener('click',()=>{
-  navigator.clipboard.writeText(document.getElementById('nombresOut').textContent).then(()=>showToast('✓ Nombres copiados'));
+  navigator.clipboard.writeText(document.getElementById('nombresOut').textContent).then(()=>showToast('Nombres copiados'));
 });
 function showToast(msg){toast.textContent=msg;toast.classList.add('on');setTimeout(()=>toast.classList.remove('on'),2200);}
 
@@ -839,7 +839,7 @@ document.getElementById('btnSaveConfig').addEventListener('click',()=>{
     lastFinalResults.sort((a,b)=>{const ia=ORDEN.indexOf(a.pre),ib=ORDEN.indexOf(b.pre);return(ia===-1?9999:ia)-(ib===-1?9999:ib);});
     renderResultTable(lastFinalResults); renderSplitPanel(lastFinalResults);
   }
-  closeDrawer(); showToast('✓ Configuración guardada');
+  closeDrawer(); showToast('Configuración guardada');
 });
 
 // Cfg tabs
@@ -950,7 +950,7 @@ document.getElementById('btnDrive').addEventListener('click',async()=>{
       status.textContent=`Descargando ${++loaded} de ${files.length}...`;
     }
     addFiles(driveFiles);
-    status.textContent=`✓ ${loaded} archivos cargados`; status.className='drive-status ok';
+    status.textContent=`${loaded} archivos cargados`; status.className='drive-status ok';
     // Cambiar a tab local para ver los chips
     document.querySelectorAll('.utab')[0].click();
   }catch(e){status.textContent=e.message||'Error al conectar';status.className='drive-status err';}
