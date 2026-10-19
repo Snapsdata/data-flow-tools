@@ -81,7 +81,9 @@ body { font-family: -apple-system, 'Helvetica Neue', Arial, sans-serif; font-siz
 .banner { border-radius: 6px; padding: 10px 14px; margin-bottom: 10px; font-size: 12px; display: none; }
 .banner.on { display: block; }
 .banner strong { font-weight: 700; display: block; margin-bottom: 3px; font-size: 10px; letter-spacing: 0.5px; text-transform: uppercase; }
+.banner ul li strong { display: inline; font-size: 11px; text-transform: none; letter-spacing: 0; }
 .banner-warn { background: #fffbe6; border: 1px solid #e0cc66; color: #6b5a00; }
+.banner-bad  { background: #ffecec; border: 1px solid #FF453A; color: #8a0000; }
 .banner-dup  { background: #fff0f0; border: 1px solid #e0aaaa; color: #7a0000; }
 .banner-date { background: #fff8f0; border: 1px solid #e0c488; color: #6b3a00; }
 .banner ul { list-style: none; }
@@ -244,7 +246,7 @@ body { font-family: -apple-system, 'Helvetica Neue', Arial, sans-serif; font-siz
       <img src="https://www.snapsmx.com/web/image/website/1/logo/SNAPS?unique=6e53ede" alt="SNAPS"
            onerror="this.style.display='none';document.getElementById('logoFallback').style.display='block'">
       <span class="logo-fallback" id="logoFallback" style="display:none">SNAPS</span>
-      <span class="header-sub">Reporte Semanal · v2.0</span>
+      <span class="header-sub">Reporte Semanal · v2.1</span>
     </div>
     <div class="header-right">
       <div class="period-tag" id="periodTag">Sin procesar</div>
@@ -292,6 +294,7 @@ body { font-family: -apple-system, 'Helvetica Neue', Arial, sans-serif; font-siz
   <!-- RESULTS -->
   <div id="results" style="display:none">
 
+    <div class="banner banner-bad"  id="badBanner"><strong>Reporte con contenido incorrecto — pedir reenvío (no se sumó)</strong><ul id="badList"></ul></div>
     <div class="banner banner-warn" id="warnBanner"><strong>Nombres de archivo no corresponden — verificar con el punto de venta</strong><ul id="warnList"></ul></div>
     <div class="banner banner-dup"  id="dupBanner"><strong>Reportes duplicados</strong><ul id="dupList"></ul></div>
     <div class="banner banner-date" id="fechasBanner"><strong>Fechas incorrectas</strong><ul id="fechasList"></ul></div>
@@ -637,7 +640,7 @@ btnClear.addEventListener('click', () => {
   resultsEl.style.display='none';
   periodTag.textContent='Sin procesar';
   progWrap.classList.remove('on');
-  ['warnBanner','dupBanner','fechasBanner'].forEach(id=>document.getElementById(id).classList.remove('on'));
+  ['badBanner','warnBanner','dupBanner','fechasBanner'].forEach(id=>document.getElementById(id).classList.remove('on'));
 });
 
 // PROCESS
@@ -650,32 +653,45 @@ btnProcess.addEventListener('click', async () => {
   const BATCH=6; let rawResults=[]; let done=0;
   for (let i=0;i<filesData.length;i+=BATCH) {
     const bRes=await Promise.all(filesData.slice(i,i+BATCH).map(fd=>processOne(fd)));
-    bRes.forEach((res,bi)=>{ rawResults.push(res); filesData[i+bi].status=res.error?'error':'loaded'; done++; setProgress(done,filesData.length); });
+    bRes.forEach((res,bi)=>{ rawResults.push(res); filesData[i+bi].status=(res.error||res.invalido)?'error':'loaded'; done++; setProgress(done,filesData.length); });
     renderGrid();
   }
   progWrap.classList.remove('on'); btnProcess.disabled=false;
 
+  // ── Reportes con contenido incorrecto ──
+  const malos=rawResults.filter(r=>r.error||r.invalido);
+  const badBanner=document.getElementById('badBanner');
+  if(malos.length){
+    document.getElementById('badList').innerHTML=malos.map(r=>{
+      const motivo=r.error?'No se pudo leer el archivo (dañado o formato no válido)':r.invalido;
+      return `<li><strong>${r.tienda}</strong> · ${r.archivo} — ${motivo}</li>`;
+    }).join('');
+    badBanner.classList.add('on');
+  } else { badBanner.classList.remove('on'); }
+
+  const validos=rawResults.filter(r=>!r.error&&!r.invalido);
+
   const pFreq={};
-  rawResults.forEach(r=>{if(r.period) pFreq[r.period]=(pFreq[r.period]||0)+1;});
+  validos.forEach(r=>{if(r.period) pFreq[r.period]=(pFreq[r.period]||0)+1;});
   let correctPeriod='',maxC=0;
   for(const[p,c] of Object.entries(pFreq)){if(c>maxC){maxC=c;correctPeriod=p;}}
   if(correctPeriod) periodTag.textContent=correctPeriod;
 
-  const wrongDate=rawResults.filter(r=>!r.error&&r.period&&r.period!==correctPeriod);
+  const wrongDate=validos.filter(r=>r.period&&r.period!==correctPeriod);
   const fechasBanner=document.getElementById('fechasBanner');
   if(wrongDate.length&&correctPeriod){
     document.getElementById('fechasList').innerHTML=wrongDate.map(r=>`<li><strong>${r.token}→${r.tienda}</strong> — ${r.period} (correcto: ${correctPeriod})</li>`).join('');
     fechasBanner.classList.add('on');
   } else { fechasBanner.classList.remove('on'); }
 
-  const unknown=rawResults.filter(r=>!r.error&&!r.pre);
+  const unknown=validos.filter(r=>!r.pre);
   if(unknown.length){
     document.getElementById('warnList').innerHTML=unknown.map(r=>`<li><strong>${r.archivo}</strong> — el nombre del archivo no coincide con ninguna tienda registrada (token detectado: <strong>${r.token}</strong>). Verificar nomenclatura con el punto de venta o agregar el prefijo en Configurar tiendas.</li>`).join('');
     document.getElementById('warnBanner').classList.add('on');
   } else { document.getElementById('warnBanner').classList.remove('on'); }
 
   const groups={};
-  rawResults.forEach(r=>{const key=r.pre||r.token;if(!groups[key])groups[key]=[];groups[key].push(r);});
+  validos.forEach(r=>{const key=r.pre||r.token;if(!groups[key])groups[key]=[];groups[key].push(r);});
   const dupGroups=Object.entries(groups).filter(([,arr])=>arr.length>1);
   const resolved={};
   for(const[key,options] of dupGroups){const chosen=await askDuplicate(key,options);resolved[key]=chosen?chosen.archivo:null;}
@@ -685,8 +701,7 @@ btnProcess.addEventListener('click', async () => {
     document.getElementById('dupBanner').classList.add('on');
   } else { document.getElementById('dupBanner').classList.remove('on'); }
 
-  let finalResults=rawResults.filter(r=>{
-    if(r.error) return false;
+  let finalResults=validos.filter(r=>{
     const key=r.pre||r.token;
     if(resolved[key]!==undefined) return r.archivo===resolved[key];
     return true;
@@ -728,7 +743,19 @@ function renderSplitPanel(fr){
   document.getElementById('cantidadesOut').textContent=lineasC.join('\n');
 }
 
+// Busca el título del reporte (ej. "Reporte de Artículos Vendidos", "Reporte General de Ventas")
+function detectarTitulo(rows){
+  for(let r=0;r<Math.min(4,rows.length);r++){
+    for(const c of (rows[r]||[])){
+      if(typeof c==='string' && norm(c).includes('REPORTE')) return c.trim();
+    }
+  }
+  return '';
+}
+
 async function processOne(fd){
+  const { token, pre } = identificarTienda(fd.name);
+  const tienda=pre&&TIENDAS[pre]?TIENDAS[pre].name:token;
   try{
     const data=await readFile(fd.file);
     const wb=XLSX.read(data,{type:'array'});
@@ -738,8 +765,6 @@ async function processOne(fd){
     const ps=row0[15]?formatDate(row0[15]):'';
     const pe=row0[20]?formatDate(row0[20]):'';
     const period=ps?`${ps} — ${pe}`:'';
-    const { token, pre } = identificarTienda(fd.name);
-    const tienda=pre&&TIENDAS[pre]?TIENDAS[pre].name:token;
     let gorras=0;
     const marcas={};
     const deptos={};
@@ -763,8 +788,18 @@ async function processOne(fd){
         }
       }
     }
-    return{tienda,gorras,marcas,deptos,especiales,archivo:fd.name,period,token,pre,error:false};
-  }catch(e){return{tienda:fd.name,gorras:0,marcas:{},archivo:fd.name,period:'',token:fd.name,pre:null,error:true};}
+
+    // ── Validación del contenido ──
+    const titulo=detectarTitulo(rows);
+    let invalido='';
+    if(titulo && !norm(titulo).includes('ARTICULO')){
+      invalido=`Trae "${titulo}" en lugar de Reporte de Artículos Vendidos`;
+    } else if(!Object.keys(deptos).length){
+      invalido='El archivo no trae artículos vendidos por departamento (vacío o formato distinto)';
+    }
+
+    return{tienda,gorras,marcas,deptos,especiales,archivo:fd.name,period,token,pre,error:false,invalido};
+  }catch(e){return{tienda,gorras:0,marcas:{},archivo:fd.name,period:'',token,pre,error:true,invalido:''};}
 }
 function renderMarcas(fr){
   // Consolidar marcas de todos los reportes
@@ -824,7 +859,7 @@ function askDuplicate(key,options){
     let selected=null; optsEl.innerHTML='';
     options.forEach((opt,i)=>{
       const div=document.createElement('div');div.className='dup-option';
-      div.innerHTML=`<div class="dup-option-num">${i+1}</div><div class="dup-option-info"><div class="dup-option-name">${opt.tienda}</div><div class="dup-option-file">${opt.archivo}</div><div class="dup-option-file">${opt.gorras} gorras</div></div>`;
+      div.innerHTML=`<div class="dup-option-num">${i+1}</div><div class="dup-option-info"><div class="dup-option-name">${opt.tienda}</div><div class="dup-option-file">${opt.archivo}</div><div class="dup-option-file">${opt.period||'sin periodo'} · ${opt.gorras} gorras</div></div>`;
       div.addEventListener('click',()=>{optsEl.querySelectorAll('.dup-option').forEach(d=>d.classList.remove('selected'));div.classList.add('selected');selected=opt;});
       optsEl.appendChild(div);
     });
